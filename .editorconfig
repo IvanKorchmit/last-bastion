@@ -2,3 +2,12 @@
 
 # IDE0032: Использовать свойство auto
 dotnet_style_prefer_auto_properties = true:none
+
+# IDE0002: Упрощение доступа для членов
+dotnet_diagnostic.IDE0002.severity = none
+
+# CS0649: Полю "Projectile.speed" нигде не присваивается значение, поэтому оно всегда будет иметь значение по умолчанию 0.
+dotnet_diagnostic.CS0649.severity = none
+
+# Default severity for analyzer diagnostics with category 'Style'
+dotnet_analyzer_diagnostic.category-Style.severity = none

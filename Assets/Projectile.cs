@@ -9,4 +9,16 @@ public class Projectile : MonoBehaviour
     {
         GetComponent<Rigidbody2D>().velocity = transform.right * speed;
     }
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if(collision.CompareTag("Enemy"))
+        {
+            if(collision.TryGetComponent(out IDamagable damage))
+            {
+                damage.Damage(5);
+                transform.Find("Trail").SetParent(null);
+                Destroy(gameObject);
+            }
+        }
+    }
 }
