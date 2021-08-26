@@ -9,10 +9,11 @@ public class UIShow : MonoBehaviour
     private void Start()
     {
         ShopUtils.UIPanel_Reference = this;
+        ShopUtils.displayInfo_Reference = moneyText;
     }
     private void OnGUI()
     {
-        moneyText.text = $"Balance: {ShopUtils.Money}";
+        moneyText.text = $"Balance: {ShopUtils.Money} TIme remaining: {WavesUtils.timeRemaining}s";
     }
     public void ShowUpWindowShop()
     {
