@@ -12,7 +12,7 @@ public class SpawnerManager : MonoBehaviour
     {
         GameObject[] enemies = WavesUtils.FindWave(waves).WaveEnemies;
         int w = WavesUtils.waveNumber;
-        int quantity = Mathf.RoundToInt(((float)w * 1.1f) * 10f);
+        int quantity = Mathf.RoundToInt(((float)w * 1.01f) * 2f);
         WavesUtils.areIncoming = true;
         for (int i = 0; i < quantity; i++)
         {

@@ -38,6 +38,7 @@ public class AIBase : MonoBehaviour
             path = p;
         }
     }
+    
     private void MoveAlong()
     {
         if (isAttacking)

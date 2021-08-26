@@ -65,7 +65,7 @@ public static class WavesUtils
     }
     public static void CheckRemainings()
     {
-        if(GameObject.FindGameObjectsWithTag("Enemy").Length - 1 <= 0)
+        if(GameObject.FindGameObjectsWithTag("Enemy").Length <= 0)
         {
             lightAnimator.SetBool("isDay", true);
             areIncoming = false;

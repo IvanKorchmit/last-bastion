@@ -8,7 +8,7 @@ public class Place : MonoBehaviour
     }
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Mouse0))
+        if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Stationary && Input.GetTouch(0).phase != TouchPhase.Moved)
         {
             if (Placement.objectToPlace != null)
             {
