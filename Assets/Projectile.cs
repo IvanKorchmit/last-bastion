@@ -16,7 +16,11 @@ public class Projectile : MonoBehaviour
             if(collision.TryGetComponent(out IDamagable damage))
             {
                 damage.Damage(5);
-                transform.Find("Trail").SetParent(null);
+                Transform trail = transform.Find("Trail");
+                if (trail != null)
+                {
+                    trail.SetParent(null);
+                }
                 Destroy(gameObject);
             }
         }

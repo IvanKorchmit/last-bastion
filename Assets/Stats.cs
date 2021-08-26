@@ -19,9 +19,8 @@ public class Stats : MonoBehaviour, IDamagable
     public void Damage(float d)
     {
         health -= d;
-        checkHealth();
     }
-    private void checkHealth()
+    private void CheckHealth()
     {
         if(health <= 0)
         {
@@ -32,5 +31,9 @@ public class Stats : MonoBehaviour, IDamagable
             Destroy(gameObject); // Use this as the placeholder.
 
         }
+    }
+    private void Update()
+    {
+        CheckHealth();
     }
 }

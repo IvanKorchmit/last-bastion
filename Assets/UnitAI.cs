@@ -4,8 +4,20 @@ using UnityEngine;
 
 public class UnitAI : MonoBehaviour
 {
-    [SerializeField] Weapon weapon;
+    [SerializeField] private Weapon weapon;
     private RangeFinder range;
+    public Weapon @Weapon
+    {
+        get
+        {
+            return weapon;
+        }
+        set
+        {
+            weapon = value;
+        }
+
+    }
     private void Start()
     {
         range = GetComponentInChildren<RangeFinder>();
