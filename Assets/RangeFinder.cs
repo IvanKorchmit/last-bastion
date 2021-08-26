@@ -14,10 +14,21 @@ public class RangeFinder : MonoBehaviour
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if(collision.TryGetComponent(out AIBase ai))
+        if (transform.parent.CompareTag("Player"))
         {
-            targets.Add(collision.transform);
-            Resort();
+            if (collision.TryGetComponent(out AIBase ai))
+            {
+                targets.Add(collision.transform);
+                Resort();
+            }
+        }
+        else
+        {
+            if (collision.TryGetComponent(out UnitAI ai))
+            {
+                targets.Add(collision.transform);
+                Resort();
+            }
         }
     }
     private void OnTriggerExit2D(Collider2D collision)

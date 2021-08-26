@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Pathfinding;
 [RequireComponent(typeof(Stats))]
 public class AIBase : MonoBehaviour
 {
@@ -8,6 +9,9 @@ public class AIBase : MonoBehaviour
     private Vector2 moveDirection;
     private Stats stats;
     private readonly Vector2 DEF_DIR = Vector2.left;
+    private Seeker seeker;
+    private Path path;
+    private RangeFinder range;
     [SerializeField] private float speed;
     private int obstLayer;
     [SerializeField] private bool isAttacking;
@@ -16,52 +20,64 @@ public class AIBase : MonoBehaviour
     {
         stats = GetComponent<Stats>();
         obstLayer = LayerMask.NameToLayer("Obstacles");
-        
+        seeker = GetComponent<Seeker>();
+        range = GetComponentInChildren<RangeFinder>();
+
     }
 
     protected virtual void Update()
     {
-        CheckObstacles();
+        MoveAlong();
         transform.Translate(moveDirection * speed * Time.deltaTime);
         TimerUtils.AddTimer(0.5f, Attack);
     }
-    private void CheckObstacles()
+    private void OnPathCalculated(Path p)
     {
-        if (isAttacking) return;
-
-        Vector2 pos = transform.position;
-        Vector2 size = new Vector2(0.25f, 1);
-        int l = obstacleCheckMask;
-        RaycastHit2D ray = Physics2D.BoxCast(pos, size, 0, DEF_DIR, 0.5f, l);
-        if (ray.collider != null && ray.collider.gameObject != gameObject)
+        if(!p.error)
         {
-            if (obstLayer == ray.collider.gameObject.layer)
+            path = p;
+        }
+    }
+    private void MoveAlong()
+    {
+        if (isAttacking)
+        {
+            moveDirection = Vector2.zero;
+            return;
+        }
+        else if (path == null)
+        {
+            if (range.ClosestTarget == null)
             {
-                if (moveDirection == DEF_DIR)
-                {
-                    switch (Random.Range(0, 2))
-                    {
-                        case 1:
-                            moveDirection = Vector2.up;
-                            break;
-                        case 0:
-                            moveDirection = Vector2.down;
-                            break;
-                    }
-                }
+                seeker.StartPath(transform.position,
+                    GameObject.Find($"{WavesUtils.TS_PATH}/Colony").transform.position, OnPathCalculated);
             }
-            else if (ray.collider.gameObject.TryGetComponent(out IDamagable damage))
+            else
             {
-                moveDirection = Vector2.zero;
-                isAttacking = true;
-                target = damage;
+                seeker.StartPath(transform.position,
+                    range.ClosestTarget.position, OnPathCalculated);
             }
         }
-        else
+        if (path != null)
         {
-            if (moveDirection != DEF_DIR && !isAttacking)
+            if(range.ClosestTarget != null)
             {
-                moveDirection = DEF_DIR;
+                seeker.StartPath(transform.position,
+                    range.ClosestTarget.position, OnPathCalculated);
+                isAttacking = true;
+                target = range.ClosestTarget.GetComponent<IDamagable>();
+            }
+            moveDirection = ((Vector3)path.path[0].position - transform.position).normalized;
+            if (Vector2.Distance(transform.position, (Vector3)path.path[0].position) <= 0.5f)
+            {
+                if (path.path.Count - 1 > 0)
+                {
+                    path.path.RemoveAt(0);
+                }
+                else
+                {
+                    path = null;
+                }
             }
         }
     }
@@ -81,7 +97,7 @@ public class AIBase : MonoBehaviour
             {
                 
                 isAttacking = false;
-                CheckObstacles();
+                MoveAlong();
                 return;
             }
         }

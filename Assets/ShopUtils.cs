@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using Pathfinding;
 public static class ShopUtils
 {
     public static UIShow UIPanel_Reference;
@@ -17,11 +18,14 @@ public static class ShopUtils
         if(money >= cost)
         {
             money -= cost;
-            Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            var obj = MonoBehaviour.Instantiate(good.Prefab, mousePos, Quaternion.identity);
+            Vector2 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            Vector2 col = GameObject.Find($"{WavesUtils.TS_PATH}/Colony").transform.position;
+            var obj = MonoBehaviour.Instantiate(good.Prefab, good.MustCome ? col : pos, Quaternion.identity);
             if(obj.CompareTag("Player"))
             {
-                obj.GetComponent<UnitAI>().Weapon = good.Weapon;
+                UnitAI uAI = obj.GetComponent<UnitAI>();
+                obj.GetComponent<Seeker>().StartPath(col, pos, uAI.OnPathCalculated);
+                uAI.Weapon = good.Weapon;
 
             }
 
@@ -41,14 +45,16 @@ public class Good
     [SerializeField] private int cost;
     [SerializeField] private GameObject prefab;
     [SerializeField] private Weapon weapon;
+    [SerializeField] private bool mustCome;
     public int Cost => cost;
     public GameObject Prefab => prefab;
     public Weapon @Weapon => weapon;
+    public bool MustCome => mustCome;
 }
 public static class WavesUtils
 {
 
-    const string TS_PATH = "TechnicalStuff";
+    public const string TS_PATH = "TechnicalStuff";
     public static int waveNumber = 1;
     public static int timeRemaining = 10;
     public static bool areIncoming = false;

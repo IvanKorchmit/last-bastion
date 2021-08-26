@@ -26,7 +26,7 @@ public class Stats : MonoBehaviour, IDamagable
         {
             if(CompareTag("Enemy"))
             {
-                TimerUtils.AddTimer(0.02f, WavesUtils.CheckRemainings);
+                TimerUtils.AddTimer(0.02f, WavesUtils.CheckRemainings); 
                 ShopUtils.GainMoney(100);
             }
             Destroy(gameObject); // Use this as the placeholder.
