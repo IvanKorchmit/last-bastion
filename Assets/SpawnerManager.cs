@@ -24,8 +24,8 @@ public class SpawnerManager : MonoBehaviour
     {
         Vector2 size = square.size;
         return (Vector2)square.bounds.center + new Vector2(
-                   (Random.value - 0.5f) * size.x,
-                   (Random.value - 0.5f) * size.y);
+                   (Random.value) * size.x,
+                   (Random.value) * size.y);
     }
     private void Update()
     {

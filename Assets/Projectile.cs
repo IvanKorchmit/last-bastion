@@ -5,6 +5,11 @@ using UnityEngine;
 public class Projectile : MonoBehaviour
 {
     [SerializeField] private float speed;
+    [SerializeField] private float damage;
+    public void SetDamage(float damage)
+    {
+        this.damage = damage;
+    }
     private void Start()
     {
         GetComponent<Rigidbody2D>().velocity = transform.right * speed;
@@ -15,7 +20,7 @@ public class Projectile : MonoBehaviour
         {
             if(collision.TryGetComponent(out IDamagable damage))
             {
-                damage.Damage(5);
+                damage.Damage(this.damage);
                 Transform trail = transform.Find("Trail");
                 if (trail != null)
                 {

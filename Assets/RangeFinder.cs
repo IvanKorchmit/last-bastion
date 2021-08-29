@@ -8,7 +8,11 @@ public class RangeFinder : MonoBehaviour
     [SerializeField] private List<Transform> targets;
     private CircleCollider2D coll;
     public Transform ClosestTarget => targets.Count > 0 ? targets[0] : null;
-    
+    private void FixedUpdate()
+    {
+        targets.RemoveAll(obj => obj == null);
+    }
+
     private void Start()
     {
         targets = new List<Transform>();
@@ -53,7 +57,6 @@ public class RangeFinder : MonoBehaviour
                 Resort();
             }
         }
-        StartCoroutine(ReEnable());
 
     }
     private void OnTriggerExit2D(Collider2D collision)
@@ -63,14 +66,7 @@ public class RangeFinder : MonoBehaviour
             targets.Remove(collision.transform);
             Resort();
         }
-        StartCoroutine(ReEnable());
 
-    }
-    private IEnumerator ReEnable()
-    {
-        coll.enabled = false;
-        yield return new WaitForEndOfFrame();
-        coll.enabled = true;
     }
     private void Resort()
     { 
@@ -100,9 +96,14 @@ public class RangeFinder : MonoBehaviour
         Light2D[] lights = GameObject.FindObjectsOfType<Light2D>();
         foreach (var l in lights)
         {
-            if(Vector2.Distance(t.position,l.gameObject.transform.position) <= l.pointLightOuterRadius)
+            if (l.lightType != Light2D.LightType.Global)
             {
-                return true;
+                float dist = Vector2.Distance(t.position, l.gameObject.transform.position);
+                if (dist <= l.pointLightOuterRadius)
+                {
+                    Debug.Log($"{t.name} at light");
+                    return true;
+                }
             }
         }
         return false;
