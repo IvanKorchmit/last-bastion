@@ -5,8 +5,12 @@ using UnityEngine;
 using UnityEngine.Experimental.Rendering.Universal;
 public class RangeFinder : MonoBehaviour
 {
+    public enum RangeType
+    {
+        enemy, ores
+    }
     [SerializeField] private List<Transform> targets;
-    private CircleCollider2D coll;
+    [SerializeField] private RangeType type;
     public Transform ClosestTarget => targets.Count > 0 ? targets[0] : null;
     private void FixedUpdate()
     {
@@ -16,14 +20,33 @@ public class RangeFinder : MonoBehaviour
     private void Start()
     {
         targets = new List<Transform>();
-        coll = GetComponent<CircleCollider2D>();
         
     }
     private void OnTriggerStay2D(Collider2D collision)
     {
-        if (transform.parent.CompareTag("Player"))
+        if (type == RangeType.enemy)
         {
-            if (!targets.Contains(collision.transform))
+            if (transform.parent.CompareTag("Player"))
+            {
+                if (!targets.Contains(collision.transform))
+                {
+                    if (collision.TryGetComponent(out AIBase ai))
+                    {
+                        if (CheckLighting(collision.transform))
+                        {
+                            targets.Add(collision.transform);
+                            Resort();
+                        }
+                    }
+                }
+            }
+        }
+    }
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (type == RangeType.enemy)
+        {
+            if (transform.parent.CompareTag("Player"))
             {
                 if (collision.TryGetComponent(out AIBase ai))
                 {
@@ -34,30 +57,29 @@ public class RangeFinder : MonoBehaviour
                     }
                 }
             }
-        }
-    }
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (transform.parent.CompareTag("Player"))
-        {
-            if (collision.TryGetComponent(out AIBase ai))
+            else
             {
-                if (CheckLighting(collision.transform))
+                if (collision.TryGetComponent(out UnitAI ai))
                 {
                     targets.Add(collision.transform);
                     Resort();
                 }
             }
         }
-        else
+        else if (type == RangeType.ores)
         {
-            if (collision.TryGetComponent(out UnitAI ai))
+            if (transform.parent.CompareTag("Player"))
             {
-                targets.Add(collision.transform);
-                Resort();
+                if (collision.CompareTag("Ore"))
+                {
+                    if (CheckLighting(collision.transform))
+                    {
+                        targets.Add(collision.transform);
+                        Resort();
+                    }
+                }
             }
         }
-
     }
     private void OnTriggerExit2D(Collider2D collision)
     {

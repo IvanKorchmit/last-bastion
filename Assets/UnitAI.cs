@@ -6,12 +6,14 @@ using Pathfinding;
 public class UnitAI : MonoBehaviour
 {
     [SerializeField] private Weapon weapon;
-    private RangeFinder range;
+    protected RangeFinder range;
     private bool isAttacking;
-    private Path path;
+    protected Path path;
     [SerializeField] private float speed;
     private Seeker seeker;
-    private Vector2 moveDirection;
+    protected Vector2 moveDirection;
+    protected Vector2 MoveDirectionP => moveDirection * speed * Time.deltaTime;
+    
     public Weapon @Weapon
     {
         get
@@ -31,7 +33,11 @@ public class UnitAI : MonoBehaviour
             path = p;
         }
     }
-    private void MoveAlong()
+    protected void FindPath(Vector2 s, Vector2 e)
+    {
+        seeker.StartPath(s, e, OnPathCalculated);
+    }
+    protected void MoveAlong()
     {
         if (isAttacking)
         {
@@ -50,8 +56,12 @@ public class UnitAI : MonoBehaviour
         {
             if (range.ClosestTarget != null)
             {
-                seeker.StartPath(transform.position,
-                    range.ClosestTarget.position, OnPathCalculated);
+                seeker.StartPath
+                    (
+                    transform.position,
+                    range.ClosestTarget.position,
+                    OnPathCalculated
+                    );
                 isAttacking = true;
             }
             moveDirection = ((Vector3)path.path[0].position - transform.position).normalized;
@@ -69,11 +79,12 @@ public class UnitAI : MonoBehaviour
             }
         }
     }
-    private void Start()
+    protected virtual void Start()
     {
         range = GetComponentInChildren<RangeFinder>();
+        seeker = GetComponent<Seeker>();
     }
-    private void Update()
+    protected virtual void Update()
     {
         transform.Translate(moveDirection * speed * Time.deltaTime);
         if (weapon is Firearm f)

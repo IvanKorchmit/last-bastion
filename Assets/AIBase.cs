@@ -13,13 +13,11 @@ public class AIBase : MonoBehaviour
     private Path path;
     private RangeFinder range;
     [SerializeField] private float speed;
-    private int obstLayer;
     [SerializeField] private bool isAttacking;
     private IDamagable target;
     protected virtual void Start()
     {
         stats = GetComponent<Stats>();
-        obstLayer = LayerMask.NameToLayer("Obstacles");
         seeker = GetComponent<Seeker>();
         range = GetComponentInChildren<RangeFinder>();
 
@@ -51,7 +49,7 @@ public class AIBase : MonoBehaviour
             if (range.ClosestTarget == null)
             {
                 seeker.StartPath(transform.position,
-                    GameObject.Find($"{WavesUtils.TS_PATH}/Colony").transform.position, OnPathCalculated);
+                    GameObject.Find(WavesUtils.COLONY_PATH).transform.position, OnPathCalculated);
             }
             else
             {

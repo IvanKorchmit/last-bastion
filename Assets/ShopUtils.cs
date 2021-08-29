@@ -19,7 +19,7 @@ public static class ShopUtils
         {
             money -= cost;
             Vector2 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            Vector2 col = GameObject.Find($"{WavesUtils.TS_PATH}/Colony").transform.position;
+            Vector2 col = GameObject.Find(WavesUtils.COLONY_PATH).transform.position;
             var obj = MonoBehaviour.Instantiate(good.Prefab, good.MustCome ? col : pos, Quaternion.identity);
             if(obj.CompareTag("Player"))
             {
@@ -55,6 +55,7 @@ public static class WavesUtils
 {
 
     public const string TS_PATH = "TechnicalStuff";
+    public const string COLONY_PATH = TS_PATH + "/Colony";
     public static int waveNumber = 1;
     public static int timeRemaining = 10;
     public static bool areIncoming = false;
