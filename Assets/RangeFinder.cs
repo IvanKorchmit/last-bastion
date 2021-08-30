@@ -11,9 +11,14 @@ public class RangeFinder : MonoBehaviour
     }
     [SerializeField] private List<Transform> targets;
     [SerializeField] private RangeType type;
+    private MinerAI miner;
     public Transform ClosestTarget => targets.Count > 0 ? targets[0] : null;
     private void FixedUpdate()
     {
+        if (type == RangeType.ores && transform.parent.CompareTag("Player"))
+        {
+            miner = GetComponentInParent<MinerAI>();
+        }
         targets.RemoveAll(obj => obj == null);
     }
 
@@ -70,7 +75,7 @@ public class RangeFinder : MonoBehaviour
         {
             if (transform.parent.CompareTag("Player"))
             {
-                if (collision.CompareTag("Ore"))
+                if (collision.CompareTag("Ore") && miner.LastMineral == collision.GetComponent<Ore>().MineralType)
                 {
                     if (CheckLighting(collision.transform))
                     {
@@ -118,7 +123,7 @@ public class RangeFinder : MonoBehaviour
         Light2D[] lights = GameObject.FindObjectsOfType<Light2D>();
         foreach (var l in lights)
         {
-            if (l.lightType != Light2D.LightType.Global)
+            if (l.lightType == Light2D.LightType.Point)
             {
                 float dist = Vector2.Distance(t.position, l.gameObject.transform.position);
                 if (dist <= l.pointLightOuterRadius)

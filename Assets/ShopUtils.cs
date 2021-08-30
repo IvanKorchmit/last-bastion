@@ -5,13 +5,55 @@ using TMPro;
 using Pathfinding;
 public static class ShopUtils
 {
+    public enum MineralType
+    {
+        Armenederdrnazite, Plasma, Pheromenirite, Carbomagnetite
+    }
     public static UIShow UIPanel_Reference;
     public static TextMeshProUGUI displayInfo_Reference;
     private static int money = 500;
+    private static int armenederdrnazite;
+    private static int plasma;
+    private static int pherominirite;
+    private static int carbomagnetite;
+    /// <summary>
+    /// Basic mineral for creating weapons
+    /// </summary>
+    public static int Armenederdrnazite => armenederdrnazite;
+    /// <summary>
+    /// Energy substance
+    /// </summary>
+    public static int Plasma => plasma;
+    /// <summary>
+    /// Unknown
+    /// </summary>
+    public static int Pherominirite => pherominirite;
+    /// <summary>
+    /// Unknown
+    /// </summary>
+    public static int Carbomagnetite => carbomagnetite;
     public static int Money => money;
     public static void GainMoney(int amount)
     {
         money += amount;
+    }
+    public static void GainResource(int amount, MineralType type)
+    {
+        switch (type)
+        {
+            case MineralType.Armenederdrnazite:
+                armenederdrnazite += amount;
+                break;
+            case MineralType.Plasma:
+                plasma += amount;
+                break;
+            case MineralType.Pheromenirite:
+                pherominirite += amount;
+                break;
+            case MineralType.Carbomagnetite:
+                carbomagnetite += amount;
+                break;
+        }
     }
     public static void Buy(int cost, Good good)
     {
@@ -26,10 +68,16 @@ public static class ShopUtils
                 UnitAI uAI = obj.GetComponent<UnitAI>();
                 obj.GetComponent<Seeker>().StartPath(col, pos, uAI.OnPathCalculated);
                 uAI.Weapon = good.Weapon;
-
+                if (uAI is MinerAI m)
+                {
+                    RaycastHit2D r = Physics2D.CircleCast(pos, 1f, Vector2.zero, 0);
+                    if (r.collider != null && r.collider.TryGetComponent(out Ore ore))
+                    {
+                        m.OreTarget = ore;
+                        ore.SetMiner(m);
+                    }
+                }
             }
-
-            
         }
     }
 }

@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Ore : MonoBehaviour, IDamagable
 {
+    [SerializeField] ShopUtils.MineralType mineralType;
     [SerializeField] private float health;
     [SerializeField] private MinerAI miner;
     private bool isOccupied(MinerAI miner)
@@ -14,7 +15,7 @@ public class Ore : MonoBehaviour, IDamagable
         }
         return true;
     }
-    
+    public ShopUtils.MineralType MineralType => mineralType;
     public float Health => health;
     public bool SetMiner(MinerAI miner)
     {
