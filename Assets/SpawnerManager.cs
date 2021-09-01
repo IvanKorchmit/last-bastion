@@ -31,7 +31,7 @@ public class SpawnerManager : MonoBehaviour
     {
         TimerUtils.AddTimer(1f, () =>
         {
-            if (WavesUtils.timeRemaining <= 0 && !WavesUtils.areIncoming)
+            if (WavesUtils.TimeRemaining <= 0 && !WavesUtils.areIncoming)
             {
                 Spawn();
                 return;
@@ -42,7 +42,7 @@ public class SpawnerManager : MonoBehaviour
             }
             else
             {
-                WavesUtils.timeRemaining--;
+                WavesUtils.DecrementTime();
             }
 
 

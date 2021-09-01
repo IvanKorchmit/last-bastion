@@ -17,19 +17,17 @@ public class MinerAI : UnitAI
     }
     [SerializeField]
     private int quantity;
+    [SerializeField]
     private bool isMining = true;
     public Ore OreTarget
     {
         set
         {
             oreTarget = value;
-            if (oreTarget == null && range.ClosestTarget != null)
+            if (oreTarget != null)
             {
                 lastMineral = oreTarget.MineralType;
-                Debug.Log(true);
-                return;
             }
-            lastMineral = ShopUtils.MineralType.Armenederdrnazite;
         }
         get
         {
@@ -39,7 +37,6 @@ public class MinerAI : UnitAI
                 lastMineral = oreTarget.MineralType;
                 return oreTarget;
             }
-            lastMineral = ShopUtils.MineralType.Armenederdrnazite;
             return oreTarget;
         }
     }
@@ -114,14 +111,25 @@ public class MinerAI : UnitAI
     }
     private void Mine()
     {
-        if (OreTarget != null && range.ClosestTarget == oreTarget.transform && isMining)
+        if (OreTarget != null && isMining)
         {
-            if (oreTarget.SetMiner(this))
+            if (range.ClosestTarget == oreTarget.transform)
             {
-                TimerUtils.AddTimer(1f, () =>
+                if (oreTarget.SetMiner(this))
                 {
-                    oreTarget.Damage(5);
-                });
+                    TimerUtils.AddTimer(1f, () =>
+                    {
+                        oreTarget.Damage(5);
+                    });
+                }
+            }
+            else
+            {
+                if (range.ClosestTarget != null)
+                {
+                    oreTarget = range.ClosestTarget.GetComponent<Ore>();
+                    return;
+                }
             }
         }
         else if (OreTarget == null && isMining && (path.path == null || path.path.Count == 0))

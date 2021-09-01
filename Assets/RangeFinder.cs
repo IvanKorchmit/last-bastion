@@ -12,30 +12,34 @@ public class RangeFinder : MonoBehaviour
     [SerializeField] private List<Transform> targets;
     [SerializeField] private RangeType type;
     private MinerAI miner;
+    private CircleCollider2D circle;
+    public float Radius => circle.radius;
     public Transform ClosestTarget => targets.Count > 0 ? targets[0] : null;
+
     private void FixedUpdate()
     {
-        if (type == RangeType.ores && transform.parent.CompareTag("Player"))
-        {
-            miner = GetComponentInParent<MinerAI>();
-        }
         targets.RemoveAll(obj => obj == null);
     }
 
     private void Start()
     {
         targets = new List<Transform>();
-        
+        if (type == RangeType.ores && transform.parent.CompareTag("Player"))
+        {
+            miner = GetComponentInParent<MinerAI>();
+        }
+        circle = GetComponent<CircleCollider2D>();
+
     }
     private void OnTriggerStay2D(Collider2D collision)
     {
-        if (type == RangeType.enemy)
+        if (transform.parent.CompareTag("Player"))
         {
-            if (transform.parent.CompareTag("Player"))
+            if (type == RangeType.enemy)
             {
                 if (!targets.Contains(collision.transform))
                 {
-                    if (collision.TryGetComponent(out AIBase ai))
+                    if (collision.CompareTag("Enemy"))
                     {
                         if (CheckLighting(collision.transform))
                         {
@@ -77,11 +81,8 @@ public class RangeFinder : MonoBehaviour
             {
                 if (collision.CompareTag("Ore") && miner.LastMineral == collision.GetComponent<Ore>().MineralType)
                 {
-                    if (CheckLighting(collision.transform))
-                    {
                         targets.Add(collision.transform);
                         Resort();
-                    }
                 }
             }
         }
@@ -102,20 +103,23 @@ public class RangeFinder : MonoBehaviour
             Transform temp = l[0];
             foreach (var item in l)
             {
-                if ((temp.position-transform.position).sqrMagnitude < (item.position - transform.position).sqrMagnitude)
+                if (temp == item) { continue; }
+                if ((temp.position-transform.position).sqrMagnitude <= (item.position - transform.position).sqrMagnitude)
                 {
+                    // Debug.Log($"{(temp.position - transform.position).sqrMagnitude} {temp.name} vs {(item.position - transform.position).sqrMagnitude} {item.name}");
                     temp = item;
                 }
             }
             return temp;
         }
         List<Transform> newList = new List<Transform>(targets.Count);
-        for (int i = 0; i < newList.Count; i++)
+        for (int i = 0; i < targets.Count; i++)
         {
             Transform min = Min(targets);
             targets.Remove(min);
             newList.Add(min);
         }
+        targets = newList;
         
     }
     private bool CheckLighting(Transform t)
@@ -128,7 +132,7 @@ public class RangeFinder : MonoBehaviour
                 float dist = Vector2.Distance(t.position, l.gameObject.transform.position);
                 if (dist <= l.pointLightOuterRadius)
                 {
-                    Debug.Log($"{t.name} at light");
+                    // Debug.Log($"{t.name} at light");
                     return true;
                 }
             }

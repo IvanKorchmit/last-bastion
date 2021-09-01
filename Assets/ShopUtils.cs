@@ -74,7 +74,6 @@ public static class ShopUtils
                     if (r.collider != null && r.collider.TryGetComponent(out Ore ore))
                     {
                         m.OreTarget = ore;
-                        ore.SetMiner(m);
                     }
                 }
             }
@@ -101,24 +100,29 @@ public class Good
 }
 public static class WavesUtils
 {
-
+    private const int DeFAULT_TIME = 30;
     public const string TS_PATH = "TechnicalStuff";
     public const string COLONY_PATH = TS_PATH + "/Colony";
     public static int waveNumber = 1;
-    public static int timeRemaining = 10;
+    private static int timeRemaining = DeFAULT_TIME;
     public static bool areIncoming = false;
     private static Animator lightAnimator;
     static WavesUtils()
     {
         lightAnimator = GameObject.Find($"{TS_PATH}/Light").GetComponent<Animator>();
     }
+    public static void DecrementTime()
+    {
+        timeRemaining--;
+    }
+    public static int TimeRemaining => timeRemaining;
     public static void CheckRemainings()
     {
         if(GameObject.FindGameObjectsWithTag("Enemy").Length <= 0)
         {
             lightAnimator.SetBool("isDay", true);
             areIncoming = false;
-            timeRemaining = 10;
+            timeRemaining = DeFAULT_TIME;
             waveNumber++;
         }
     }

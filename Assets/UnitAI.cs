@@ -99,6 +99,10 @@ public class UnitAI : MonoBehaviour
                 isAttacking = false;
             }
         }
+        else if (weapon is Melee m)
+        {
+            FindPath(transform.position, GameObject.FindGameObjectWithTag("Enemy").transform.position);
+        }
         MoveAlong();
     }
     public void Attack()

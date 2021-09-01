@@ -560,6 +560,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targets: []
+  type: 0
 --- !u!1 &9198191629167371463
 GameObject:
   m_ObjectHideFlags: 0

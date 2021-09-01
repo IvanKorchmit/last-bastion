@@ -17,8 +17,8 @@ public class UIShow : MonoBehaviour
     }
     private void OnGUI()
     {
-        string s = WavesUtils.timeRemaining > 0 ? "seconds" : "second";
-        lowerPanelDisplayInfo.text = $"Time remaining: {WavesUtils.timeRemaining} {s}";
+        string s = WavesUtils.TimeRemaining > 0 ? "seconds" : "second";
+        lowerPanelDisplayInfo.text = $"Time remaining: {WavesUtils.TimeRemaining} {s}";
         mainMoneyText.text = $"{ShopUtils.Money}$";
         armenText.text = $"A:{ShopUtils.Armenederdrnazite}";
         carboText.text = $"C:{ShopUtils.Carbomagnetite}";
