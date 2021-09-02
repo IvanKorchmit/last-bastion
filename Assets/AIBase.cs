@@ -5,10 +5,8 @@ using Pathfinding;
 [RequireComponent(typeof(Stats))]
 public class AIBase : MonoBehaviour
 {
-    [SerializeField] private LayerMask obstacleCheckMask;
     private Vector2 moveDirection;
     private Stats stats;
-    private readonly Vector2 DEF_DIR = Vector2.left;
     private Seeker seeker;
     private Path path;
     private RangeFinder range;
@@ -28,6 +26,22 @@ public class AIBase : MonoBehaviour
         MoveAlong();
         transform.Translate(moveDirection * speed * Time.deltaTime);
         TimerUtils.AddTimer(0.5f, Attack);
+        UpdateTarget();
+    }
+    private void UpdateTarget()
+    {
+        if (target != null && target.transform != range.ClosestTarget)
+        {
+            if (range.ClosestTarget == null)
+            {
+                target = null;
+            }
+            else
+            {
+                target = range.ClosestTarget.GetComponent<IDamagable>();
+            }
+
+        }
     }
     private void OnPathCalculated(Path p)
     {
@@ -106,4 +120,5 @@ interface IDamagable
 {
     void Damage(float d);
     float Health { get; }
+    Transform transform { get; }
 }

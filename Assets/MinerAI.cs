@@ -132,7 +132,7 @@ public class MinerAI : UnitAI
                 }
             }
         }
-        else if (OreTarget == null && isMining && (path.path == null || path.path.Count == 0))
+        else if (OreTarget == null && isMining && (path == null || path.path.Count == 0))
         {
             FindPath(transform.position, GameObject.FindGameObjectWithTag("Ore").transform.position);
         }

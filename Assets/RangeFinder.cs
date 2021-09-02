@@ -13,7 +13,7 @@ public class RangeFinder : MonoBehaviour
     [SerializeField] private RangeType type;
     private MinerAI miner;
     private CircleCollider2D circle;
-    public float Radius => circle.radius;
+    public float Radius { get => circle.radius; set => circle.radius = value; }
     public Transform ClosestTarget => targets.Count > 0 ? targets[0] : null;
 
     private void FixedUpdate()
@@ -23,12 +23,12 @@ public class RangeFinder : MonoBehaviour
 
     private void Start()
     {
+        circle = GetComponent<CircleCollider2D>();
         targets = new List<Transform>();
         if (type == RangeType.ores && transform.parent.CompareTag("Player"))
         {
             miner = GetComponentInParent<MinerAI>();
         }
-        circle = GetComponent<CircleCollider2D>();
 
     }
     private void OnTriggerStay2D(Collider2D collision)
@@ -68,7 +68,7 @@ public class RangeFinder : MonoBehaviour
             }
             else
             {
-                if (collision.TryGetComponent(out UnitAI ai))
+                if (collision.CompareTag("Wall") || collision.TryGetComponent(out UnitAI ai))
                 {
                     targets.Add(collision.transform);
                     Resort();

@@ -2,10 +2,6 @@
 
 public class Place : MonoBehaviour
 {
-    private void Start()
-    {
-        
-    }
     private void Update()
     {
         if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Stationary && Input.GetTouch(0).phase != TouchPhase.Moved)

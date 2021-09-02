@@ -83,6 +83,10 @@ public class UnitAI : MonoBehaviour
     {
         range = GetComponentInChildren<RangeFinder>();
         seeker = GetComponent<Seeker>();
+        if (weapon is Melee m )
+        {
+            range.Radius = m.Range;
+        }
     }
     protected virtual void Update()
     {
@@ -101,7 +105,24 @@ public class UnitAI : MonoBehaviour
         }
         else if (weapon is Melee m)
         {
-            FindPath(transform.position, GameObject.FindGameObjectWithTag("Enemy").transform.position);
+            GameObject en = GameObject.FindGameObjectWithTag("Enemy");
+            if (en != null && (path == null || path.path.Count == 0))
+            {
+                FindPath(transform.position, en.transform.position);
+            }
+            if (range.ClosestTarget != null)
+            {
+                TimerUtils.AddTimer(m.Cooldown, () =>
+                 {
+                     if (range.ClosestTarget != null)
+                     {
+                         if (range.ClosestTarget.TryGetComponent(out IDamagable damage))
+                         {
+                             damage.Damage(m.MeleeDamage);
+                         }
+                     }
+                 });
+            }
         }
         MoveAlong();
     }

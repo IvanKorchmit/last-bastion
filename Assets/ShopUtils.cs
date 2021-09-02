@@ -124,6 +124,7 @@ public static class WavesUtils
             areIncoming = false;
             timeRemaining = DeFAULT_TIME;
             waveNumber++;
+            Calendar.Update();
         }
     }
     public static WaveProps FindWave(WaveProps[] waves)
@@ -150,4 +151,35 @@ public class WaveProps
     [SerializeField] private bool isBossWave;
     public int WaveNumber => waveNumber;
     public GameObject[] WaveEnemies => waveEnemies;
+}
+public static class Calendar
+{
+    private static Animator cameraAnimatorReference = Camera.main.GetComponent<Animator>();
+    public static Day[] days;
+    [System.Serializable]
+    public struct Day
+    {
+        public bool isWinter;
+        public int number;
+    }
+    public static void Update()
+    {
+        cameraAnimatorReference.SetBool("isWinter", IsWinter());
+    }
+    public static bool IsWinter()
+    {
+        bool isWinter = false;
+        foreach (Day day in days)
+        {
+            if (day.number > WavesUtils.waveNumber)
+            {
+                return true;
+            }
+            else
+            {
+                isWinter = day.isWinter;
+            }
+        }
+        return isWinter;
+    }
 }
