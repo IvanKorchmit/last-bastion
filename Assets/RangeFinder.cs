@@ -122,7 +122,7 @@ public class RangeFinder : MonoBehaviour
         targets = newList;
         
     }
-    private bool CheckLighting(Transform t)
+    public static bool CheckLighting(Transform t)
     {
         Light2D[] lights = GameObject.FindObjectsOfType<Light2D>();
         foreach (var l in lights)
@@ -130,8 +130,9 @@ public class RangeFinder : MonoBehaviour
             if (l.lightType == Light2D.LightType.Point)
             {
                 float dist = Vector2.Distance(t.position, l.gameObject.transform.position);
-                if (dist <= l.pointLightOuterRadius)
+                if (dist <= l.pointLightInnerRadius)
                 {
+                    Debug.Log($"d: {dist}\nr:{l.pointLightOuterRadius}");
                     // Debug.Log($"{t.name} at light");
                     return true;
                 }

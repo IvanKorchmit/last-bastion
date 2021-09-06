@@ -105,7 +105,16 @@ public class UnitAI : MonoBehaviour
         }
         else if (weapon is Melee m)
         {
-            GameObject en = GameObject.FindGameObjectWithTag("Enemy");
+            GameObject[] ens = GameObject.FindGameObjectsWithTag("Enemy");
+            GameObject en = null;
+            foreach (var e in ens)
+            {
+                if (RangeFinder.CheckLighting(e.transform))
+                {
+                    en = e;
+                    break;
+                }
+            }
             if (en != null && (path == null || path.path.Count == 0))
             {
                 FindPath(transform.position, en.transform.position);

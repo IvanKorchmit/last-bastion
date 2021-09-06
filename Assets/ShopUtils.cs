@@ -171,9 +171,9 @@ public static class Calendar
         bool isWinter = false;
         foreach (Day day in days)
         {
-            if (day.number > WavesUtils.waveNumber)
+            if (WavesUtils.waveNumber >= day.number)
             {
-                return true;
+                return day.isWinter;
             }
             else
             {
