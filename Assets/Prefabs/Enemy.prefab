@@ -46,6 +46,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targets: []
+  type: 0
 --- !u!58 &4496864264852758023
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -213,10 +214,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14453cff5bea5ac40bcde99eee4eed3a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  obstacleCheckMask:
-    serializedVersion: 2
-    m_Bits: 192
-  speed: 1
+  speed: 2
   isAttacking: 0
 --- !u!61 &8576945793781156297
 BoxCollider2D:
@@ -260,6 +258,8 @@ MonoBehaviour:
   armor: 0
   meleeDamage: 10
   rangedDamage: 10
+  healthBar: {fileID: 0}
+  armorBar: {fileID: 0}
 --- !u!114 &7792318225551124658
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -103,10 +103,11 @@ public static class WavesUtils
     private const int DeFAULT_TIME = 30;
     public const string TS_PATH = "TechnicalStuff";
     public const string COLONY_PATH = TS_PATH + "/Colony";
-    public static int waveNumber = 1;
+    private static int waveNumber = 1;
     private static int timeRemaining = DeFAULT_TIME;
     public static bool areIncoming = false;
     private static Animator lightAnimator;
+    public static int WaveNumber => waveNumber;
     static WavesUtils()
     {
         lightAnimator = GameObject.Find($"{TS_PATH}/Light").GetComponent<Animator>();
@@ -165,13 +166,17 @@ public static class Calendar
     public static void Update()
     {
         cameraAnimatorReference.SetBool("isWinter", IsWinter());
+        if (WavesUtils.WaveNumber % 3 == 0)
+        {
+            HumanResourcesUtils.IncreaseHumanResources();
+        }
     }
     public static bool IsWinter()
     {
         bool isWinter = false;
         foreach (Day day in days)
         {
-            if (WavesUtils.waveNumber >= day.number)
+            if (WavesUtils.WaveNumber >= day.number)
             {
                 return day.isWinter;
             }
@@ -181,5 +186,31 @@ public static class Calendar
             }
         }
         return isWinter;
+    }
+}
+
+public static class HumanResourcesUtils
+{
+    private static float chaos = 0f;
+    private static int humanResources = 5;
+
+    public static int HumanResources => humanResources;
+
+    public static bool TakeOne()
+    {
+        if (humanResources > 0)
+        {
+            humanResources--;
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    public static void IncreaseHumanResources()
+    {
+        //humanResources = Mathf.RoundToInt(humanResources + (float)humanResources * 1.1f);
+        humanResources += Random.Range(2, 5);
     }
 }

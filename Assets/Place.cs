@@ -1,16 +1,20 @@
 ﻿using UnityEngine;
-
+using UnityEngine.Events;
+using UnityEngine.EventSystems;
 public class Place : MonoBehaviour
 {
-    private void Update()
+    private void OnGUI()
     {
-        if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Stationary && Input.GetTouch(0).phase != TouchPhase.Moved)
+        if (!EventSystem.current.IsPointerOverGameObject() && Event.current.clickCount >= 2)
         {
             if (Placement.objectToPlace != null)
             {
-                ShopUtils.Buy(Placement.objectToPlace.Cost, Placement.objectToPlace);
-                Placement.objectToPlace = null;
-                ShopUtils.UIPanel_Reference.shopWindow.gameObject.SetActive(true);
+                if (!Placement.objectToPlace.MustCome || HumanResourcesUtils.TakeOne())
+                {
+                    ShopUtils.Buy(Placement.objectToPlace.Cost, Placement.objectToPlace);
+                    Placement.objectToPlace = null;
+                    TimerUtils.AddTimer(0.02f, () => ShopUtils.UIPanel_Reference.shopWindow.gameObject.SetActive(true));
+                }
             }
         }
     }

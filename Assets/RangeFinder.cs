@@ -13,7 +13,7 @@ public class RangeFinder : MonoBehaviour
     [SerializeField] private RangeType type;
     private MinerAI miner;
     private CircleCollider2D circle;
-    public float Radius { get => circle.radius; set => circle.radius = value; }
+    public float Radius { get => circle?.radius ?? 0; set => circle.radius = value; }
     public Transform ClosestTarget => targets.Count > 0 ? targets[0] : null;
 
     private void FixedUpdate()
@@ -132,7 +132,7 @@ public class RangeFinder : MonoBehaviour
                 float dist = Vector2.Distance(t.position, l.gameObject.transform.position);
                 if (dist <= l.pointLightInnerRadius)
                 {
-                    Debug.Log($"d: {dist}\nr:{l.pointLightOuterRadius}");
+                    Debug.Log($"d: {dist}\nr:{l.pointLightInnerRadius}");
                     // Debug.Log($"{t.name} at light");
                     return true;
                 }

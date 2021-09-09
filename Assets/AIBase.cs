@@ -27,6 +27,7 @@ public class AIBase : MonoBehaviour
         transform.Translate(moveDirection * speed * Time.deltaTime);
         TimerUtils.AddTimer(0.5f, Attack);
         UpdateTarget();
+        
     }
     private void UpdateTarget()
     {
@@ -41,6 +42,10 @@ public class AIBase : MonoBehaviour
                 target = range.ClosestTarget.GetComponent<IDamagable>();
             }
 
+        }
+        else if (target == null)
+        {
+            target = null;
         }
     }
     private void OnPathCalculated(Path p)

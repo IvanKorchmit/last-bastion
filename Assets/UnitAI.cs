@@ -85,7 +85,7 @@ public class UnitAI : MonoBehaviour
         seeker = GetComponent<Seeker>();
         if (weapon is Melee m )
         {
-            range.Radius = m.Range;
+            TimerUtils.AddTimer(0.02f,()=>range.Radius = m.Range);
         }
     }
     protected virtual void Update()

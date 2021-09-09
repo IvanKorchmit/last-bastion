@@ -38,7 +38,7 @@ public class Stats : MonoBehaviour, IDamagable
                 TimerUtils.AddTimer(0.02f, WavesUtils.CheckRemainings); 
                 ShopUtils.GainMoney(100);
             }
-            Destroy(gameObject); // Use this as the placeholder.
+            gameObject.SetActive(false);
 
         }
     }
