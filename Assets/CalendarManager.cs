@@ -8,4 +8,8 @@ public class CalendarManager : MonoBehaviour
     {
         Calendar.days = days;
     }
+    private void Update()
+    {
+        TimerUtils.AddTimer(1, WeatherUtils.Update);
+    }
 }
