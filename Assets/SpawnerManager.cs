@@ -13,7 +13,7 @@ public class SpawnerManager : MonoBehaviour
         GameObject[] enemies = WavesUtils.FindWave(waves).WaveEnemies;
         int w = WavesUtils.WaveNumber;
         int quantity = Mathf.RoundToInt(((float)w * 1.01f) * 2f);
-        WavesUtils.areIncoming = true;
+        WavesUtils.SetIncoming();
         for (int i = 0; i < quantity; i++)
         {
             Instantiate(enemies[Random.Range(0, enemies.Length)], PositionInside(), Quaternion.identity);
@@ -22,21 +22,22 @@ public class SpawnerManager : MonoBehaviour
     }
     private Vector2 PositionInside()
     {
-        Vector2 size = square.size;
-        return (Vector2)square.bounds.center + new Vector2(
-                   (Random.value) * size.x,
-                   (Random.value) * size.y);
+        Vector2 size = square.bounds.size;
+        Vector2 topLeft = (Vector2)square.bounds.center - size / 2;
+        Vector2 bottomRight = (Vector2)square.bounds.center + size / 2;
+        Debug.Log((Vector2)transform.position - (topLeft * Random.value - bottomRight * Random.value));
+        return (Vector2)transform.position - (topLeft * Random.value - bottomRight * Random.value);
     }
     private void Update()
     {
         TimerUtils.AddTimer(1f, () =>
         {
-            if (WavesUtils.TimeRemaining <= 0 && !WavesUtils.areIncoming)
+            if (WavesUtils.TimeRemaining <= 0 && !WavesUtils.AreIncoming)
             {
                 Spawn();
                 return;
             }
-            else if (WavesUtils.areIncoming)
+            else if (WavesUtils.AreIncoming)
             {
                 return;
             }

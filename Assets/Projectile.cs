@@ -20,7 +20,7 @@ public class Projectile : MonoBehaviour
         {
             if(collision.TryGetComponent(out IDamagable damage))
             {
-                damage.Damage(this.damage);
+                damage.Damage(this.damage, transform.parent.gameObject);
                 Transform trail = transform.Find("Trail");
                 if (trail != null)
                 {

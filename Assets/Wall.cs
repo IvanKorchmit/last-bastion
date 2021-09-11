@@ -7,7 +7,7 @@ public class Wall : MonoBehaviour, IDamagable
     [SerializeField] private float health;
     public float Health => health;
 
-    public void Damage(float d)
+    public void Damage(float d, GameObject owner)
     {
         health -= d;
         CheckHealth();
