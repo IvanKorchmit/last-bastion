@@ -9,8 +9,8 @@ public class ColonySystem : MonoBehaviour
         if(collision.CompareTag("Enemy"))
         {
             HumanResourcesUtils.IncreaseChaos(0.1f);
-            WavesUtils.CheckRemainings();
             Destroy(collision.gameObject);
+            TimerUtils.AddTimer(0.02f,()=>WavesUtils.CheckRemainings());
         }   
     }
 }

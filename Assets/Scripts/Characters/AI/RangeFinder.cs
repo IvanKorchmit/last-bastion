@@ -116,7 +116,7 @@ public class RangeFinder : MonoBehaviour
                 float dist = Vector2.Distance(t.position, l.gameObject.transform.position);
                 if (dist <= l.pointLightInnerRadius)
                 {
-                    Debug.Log($"d: {dist}\nr:{l.pointLightInnerRadius}");
+                    // Debug.Log($"d: {dist}\nr:{l.pointLightInnerRadius}");
                     // Debug.Log($"{t.name} at light");
                     return true;
                 }

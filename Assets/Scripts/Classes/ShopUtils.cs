@@ -4,7 +4,8 @@ using UnityEngine;
 using TMPro;
 using Pathfinding;
 using System.Linq;
-using System;
+using UnityEngine.UI;
+using Dialogue;
 public static class ShopUtils
 {
     public static UIShow UIPanel_Reference;
@@ -61,62 +62,113 @@ public static class GameUtils
     }
     public static void EndGame(GameOverReason reason)
     {
+        Content.Choice[] Ok = new Content.Choice[] { new Content.Choice("End game",
+                    () =>
+                    {
+                        if(!Application.isEditor)
+                        {
+                            Application.Quit();
+                        }
+                        else
+                        {
+                            UnityEditor.EditorApplication.isPlaying = false;
+                        }
+                        return true;
+                        }, null, null)
+                    };
+        Content endContent = null;
         switch (reason)
         {
             case GameOverReason.Lose:
+                {
+                    endContent = new Content(Ok, "You have lost the game. Chaos has increased to high amounts and people are now leaving this order!");
+                }
                 break;
-            case GameOverReason.DemoOver:   
+            case GameOverReason.DemoOver:
+
+                endContent = new Content(Ok, "Thanks for playiing demo! Wait for further development later!!");
+
                 break;
             case GameOverReason.CampaignComplete:
                 break;
             default:
                 break;
         }
+        DialogueUtils.Dialogue(endContent);
     }
 }
 namespace Dialogue
 {
-    [System.Serializable]
     public class Content
     {
-        [System.Serializable]
         public class Choice
         {
-            private Action action;
-            [SerializeField] private string text;
-            public Choice(string text, Action action)
+            public delegate bool ChoiceAction();
+            private ChoiceAction action;
+            private string text;
+            private Content alternativeResponse;
+            private Content next;
+            public Choice(string text, ChoiceAction action, Content next, Content alt)
             {
                 this.text = text;
                 this.action = action;
+                this.next = next;
+                alternativeResponse = alt;
             }
             public string Text => text;
             public void OnChoice()
             {
-                action();
+                if (action())
+                {
+                    if (next != null)
+                    {
+                        DialogueUtils.Dialogue(next);
+                    }
+                }
+                else
+                {
+                    DialogueUtils.Dialogue(alternativeResponse);
+                }
             }
         }
-        [SerializeField] private Choice[] choices;
-        [SerializeField] private string text;
-        [SerializeField] private Content[] nextContent;
+        private Choice[] choices;
+        private string text;
         public string Text => text;
-        public Content[] NextContent => nextContent;
-        public Content(Choice[] choices, string text, Content[] nested)
+        public Choice[] Choices => choices;
+        public Content(Choice[] choices, string text)
         {
             this.choices = choices;
             this.text = text;
-            nextContent = nested;
         }
     }
 }
 public static class DialogueUtils
 {
+    public static RectTransform dialoguePanelRef;
+    public static GameObject choiceButton;
     public static void Dialogue(Dialogue.Content content)
     {
-
+        dialoguePanelRef.gameObject.SetActive(true);
+        TextMeshProUGUI text = dialoguePanelRef.Find("Text").GetComponent<TextMeshProUGUI>();
+        text.text = content.Text;
+        Transform buttons = dialoguePanelRef.Find("Buttons");
+        while (buttons.childCount > 0)
+        {
+            Transform child = buttons.GetChild(0);
+            child.SetParent(null);
+            MonoBehaviour.Destroy(child.gameObject);
+        }
+        for (int i = 0; i < content.Choices.Length; i++)
+        {
+            Button b = MonoBehaviour.Instantiate(choiceButton, buttons).GetComponent<Button>();
+            b.onClick.AddListener(content.Choices[i].OnChoice);
+            b.transform.Find("Text").GetComponent<TextMeshProUGUI>().text = content.Choices[i].Text;
+        }
+        
     }
     public static void CloseDIalogue()
     {
-
+        dialoguePanelRef.gameObject.SetActive(false);
     }
 }
 
@@ -206,8 +258,9 @@ public static class Calendar
     public static bool IsWinter()
     {
         bool isWinter = false;
-        foreach (Day day in days)
+        for (int i = days.Length - 1; i >= 0; i--)
         {
+            Day day = days[i];
             if (WavesUtils.WaveNumber >= day.number)
             {
                 if (day.gameEvent != null)
@@ -238,6 +291,8 @@ public static class HumanResourcesUtils
         if (chaos + v >= 1)
         {
             GameUtils.EndGame(GameUtils.GameOverReason.Lose);
+            chaos += v;
+            chaos = Mathf.Clamp01(chaos);
             return;
         }
         chaos += v;
@@ -263,7 +318,7 @@ public static class HumanResourcesUtils
 
 public static class WeatherUtils
 {
-    private static GameEvent currentEvent;
+    private static GameEvent currentEvent = null;
     public enum Status
     {
         none, acid_rain
@@ -291,7 +346,10 @@ public static class WeatherUtils
     }
     public static void ApplyEvent(GameEvent e)
     {
-        currentEvent.End();
+        if (currentEvent != null)
+        {
+            currentEvent.End();
+        }
         currentEvent = e;
         currentEvent.Launch();
     }

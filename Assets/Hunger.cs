@@ -8,27 +8,39 @@ public class Hunger : GameEvent
     {
         Content.Choice[] Ok = new Content.Choice[] { new Content.Choice("Okay",
             () => { 
-                DialogueUtils.CloseDIalogue(); 
-            }) 
+                DialogueUtils.CloseDIalogue();
+                return true;
+            }, null, null)
         };
-        Content.Choice yesChoice = new Content.Choice("Yes", SpendMoney);
-        Content.Choice noChoice = new Content.Choice("No",Deny);
+        Content yesContent = new Content(Ok, "Good, we are now good :)");
+        Content noContent = new Content(Ok, "NO we are dying of starvation now :'(");
+        Content.Choice noChoice = new Content.Choice("No",Deny, noContent, null);
+        Content falseYesContent = new Content(new Content.Choice[] { noChoice }, "Looks like you do not have enough money for that :(");
+        Content.Choice yesChoice = new Content.Choice("Yes", SpendMoney, yesContent, falseYesContent);
+        
         Content.Choice[] choices = new Content.Choice[] { 
             yesChoice, 
             noChoice
         };
-        Content yesContent = new Content(Ok, "Good, we are now good :)", null);
-        Content noContent = new Content(Ok, "NO we are dying of starvation now :'(", null);
 
-        Content[] nestedContents = new Content[] { yesContent, noContent };
+        Content mainContent = new Content(choices, "Hello, we are hungry");
 
-        Content mainContent = new Content(choices, "Hello, we are hungry", nestedContents);
+
+        DialogueUtils.Dialogue(mainContent);
     }
-    private void SpendMoney()
+    private bool SpendMoney()
     {
-        ShopUtils.Buy(100, null);
+        if (ShopUtils.Money >= 500)
+        {
+            ShopUtils.Buy(100, null);
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
-    private void Deny()
+    private bool Deny()
     {
         HumanResourcesUtils.IncreaseChaos(0.2f);
         for (int i = 0; i < Random.Range(2,3); i++)
@@ -38,5 +50,6 @@ public class Hunger : GameEvent
                 break;
             }
         }
+        return true;
     }
 }

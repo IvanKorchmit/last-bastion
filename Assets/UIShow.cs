@@ -9,11 +9,15 @@ public class UIShow : MonoBehaviour
     public TextMeshProUGUI mainMoneyText;
     public TextMeshProUGUI humanResourcesCounterText;
     public RectTransform shopWindow;
+    public RectTransform dialoguePanel;
+    public GameObject choiceButtonPrefab;
     public Image chaosBar;
     private void Start()
     {
         ShopUtils.UIPanel_Reference = this;
         ShopUtils.displayInfo_Reference = lowerPanelDisplayInfo;
+        DialogueUtils.dialoguePanelRef = dialoguePanel;
+        DialogueUtils.choiceButton = choiceButtonPrefab;
     }
     private void Update()
     {

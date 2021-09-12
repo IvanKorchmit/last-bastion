@@ -25,7 +25,7 @@ public class SpawnerManager : MonoBehaviour
         Vector2 size = square.bounds.size;
         Vector2 topLeft = (Vector2)square.bounds.center - size / 2;
         Vector2 bottomRight = (Vector2)square.bounds.center + size / 2;
-        Debug.Log((Vector2)transform.position - (topLeft * Random.value - bottomRight * Random.value));
+        // Debug.Log((Vector2)transform.position - (topLeft * Random.value - bottomRight * Random.value));
         return (Vector2)transform.position - (topLeft * Random.value - bottomRight * Random.value);
     }
     private void Update()

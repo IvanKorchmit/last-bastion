@@ -9,13 +9,16 @@ public class TimerUtils : MonoBehaviour
     {
         private Action callback;
         private float timer;
-        public bool isCallbackSame(Action callback)
+        private float initTimer;
+        public bool isSame(Action callback, float t)
         {
-            return this.callback.Equals(callback);
+            return this.callback.Equals(callback) && initTimer == t;
         }
+        public float InitialTimer => initTimer;
         public Timer(float t, Action callback)
         {
             timer = t;
+            initTimer = t;
             this.callback = callback;
         }
         public void Step()
@@ -71,7 +74,7 @@ public class TimerUtils : MonoBehaviour
     {
         foreach (var item in timer)
         {
-            if (item != null && item.isCallbackSame(callback))
+            if (item != null && item.isSame(callback, t))
             {
                 return;
             }
