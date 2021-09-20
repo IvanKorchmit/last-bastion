@@ -354,3 +354,12 @@ public static class WeatherUtils
         currentEvent.Launch();
     }
 }
+
+
+namespace TechnologyTree
+{
+    public static class TechTreeUtils
+    {
+        public static Branch techBranch;
+    }
+}

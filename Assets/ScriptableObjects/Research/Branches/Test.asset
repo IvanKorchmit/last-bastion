@@ -21,17 +21,66 @@ MonoBehaviour:
       - researchable: {fileID: 0}
         subBranches:
         - researchable: {fileID: 0}
+          subBranches: []
+          commonBranch: {fileID: 0}
+          isAvailable: 0
+          buttonReference: {fileID: 0}
+        commonBranch: {fileID: 0}
+        isAvailable: 0
+        buttonReference: {fileID: 0}
+      - researchable: {fileID: 0}
+        subBranches:
+        - researchable: {fileID: 0}
+          subBranches: []
+          commonBranch: {fileID: 0}
+          isAvailable: 0
+          buttonReference: {fileID: 0}
+        - researchable: {fileID: 0}
           subBranches:
           - researchable: {fileID: 0}
-            subBranches: []
+            subBranches:
+            - researchable: {fileID: 0}
+              subBranches: []
+              commonBranch: {fileID: 0}
+              isAvailable: 0
+              buttonReference: {fileID: 0}
+            - researchable: {fileID: 0}
+              subBranches: []
+              commonBranch: {fileID: 0}
+              isAvailable: 0
+              buttonReference: {fileID: 0}
+            - researchable: {fileID: 0}
+              subBranches: []
+              commonBranch: {fileID: 0}
+              isAvailable: 0
+              buttonReference: {fileID: 0}
             commonBranch: {fileID: 0}
+            isAvailable: 0
+            buttonReference: {fileID: 0}
           commonBranch: {fileID: 0}
+          isAvailable: 0
+          buttonReference: {fileID: 0}
+        - researchable: {fileID: 0}
+          subBranches: []
+          commonBranch: {fileID: 0}
+          isAvailable: 0
+          buttonReference: {fileID: 0}
         commonBranch: {fileID: 0}
-      commonBranch: {fileID: 0}
-    - researchable: {fileID: 0}
-      subBranches:
+        isAvailable: 0
+        buttonReference: {fileID: 0}
       - researchable: {fileID: 0}
-        subBranches: []
+        subBranches:
+        - researchable: {fileID: 0}
+          subBranches: []
+          commonBranch: {fileID: 0}
+          isAvailable: 0
+          buttonReference: {fileID: 0}
         commonBranch: {fileID: 0}
+        isAvailable: 0
+        buttonReference: {fileID: 0}
       commonBranch: {fileID: 0}
+      isAvailable: 0
+      buttonReference: {fileID: 0}
     commonBranch: {fileID: 0}
+    isAvailable: 0
+    buttonReference: {fileID: 0}
