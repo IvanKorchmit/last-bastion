@@ -346,9 +346,9 @@ public static class WeatherUtils
     }
     public static void ApplyEvent(GameEvent e)
     {
-        if (currentEvent != null)
+        if (currentEvent != null && currentEvent is IEventEndable ev)
         {
-            currentEvent.End();
+            ev.End();
         }
         currentEvent = e;
         currentEvent.Launch();
@@ -358,8 +358,46 @@ public static class WeatherUtils
 
 namespace TechnologyTree
 {
-    public static class TechTreeUtils
-    {
-        public static Branch techBranch;
-    }
+        public static class Upgrades
+        {
+            private static List<ResearchUpgrade> researches;
+            static Upgrades()
+            {
+                researches = new List<ResearchUpgrade>();
+            }
+            public static ResearchUpgrade GetLatestUpgrade(ResearchUpgrade r)
+            {
+                foreach (var item in researches)
+                {
+                    if(item.GetType() == r.GetType())
+                    {
+                        return item;
+                    }
+                }
+                return null;
+            }
+            public static void Add(ResearchUpgrade r)
+            {
+                for (int x = 0; x < researches.Count; x++)
+                {
+                    ResearchUpgrade i = researches[x];
+                    if(i.GetType() == r.GetType())
+                    {
+                        researches[x] = i;
+                        ApplyUpgrades();
+                        return;
+                    }
+                }
+                researches.Add(r);
+                ApplyUpgrades();
+            }
+            public static void ApplyUpgrades()
+            {
+                foreach (var r in researches)
+                {
+                    r.OnUpgrade();
+                }
+            }
+
+        }
 }

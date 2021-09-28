@@ -1,9 +1,9 @@
 using UnityEngine;
 using TechnologyTree;
+using TechnologyTree.Researches;
 using UnityEngine.UI;
 public class ResearchButton : MonoBehaviour, IUnlockable
 {
-    public ResearchUpgrade res;
     public Branch branch;
     private void Start()
     {
@@ -11,10 +11,11 @@ public class ResearchButton : MonoBehaviour, IUnlockable
     }
     public void OnClick()
     {
-        if(branch.IsAvailable)
+        if(branch.IsAvailable && !branch.IsOpen)
         {
             branch.Open();
-            branch.ButtonReference.GetComponent<IUnlockable>().Unlock();
+            Unlock();
+            Upgrades.Add(branch.Researchable);
             Branch[] b = branch.ChildBranches;
             for (int i = 0; i < branch.ChildBranches.Length; i++)
             {

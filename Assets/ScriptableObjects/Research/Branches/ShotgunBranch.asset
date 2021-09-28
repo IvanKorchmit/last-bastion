@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 436e46f89dd1563448be559e67716cb2, type: 3}
+  m_Name: ShotgunBranch
+  m_EditorClassIdentifier: 
+  name: 
+  branch:
+    researchable: {fileID: 11400000, guid: 85789069b1901324e93dab234d82697a, type: 2}
+    subBranches:
+    - researchable: {fileID: 11400000, guid: 424f1168e6bf9e4428585abae8d99290, type: 2}
+      subBranches:
+      - researchable: {fileID: 11400000, guid: d026633b7702e504f9e39dd2fa2b28f4, type: 2}
+        subBranches:
+        - researchable: {fileID: 11400000, guid: 9af33223e5869e2498e1bdb91353f55a, type: 2}
+          subBranches:
+          - researchable: {fileID: 11400000, guid: 659c2b02dc5096d48b53b2d7f3018a74, type: 2}
+            subBranches: []
+            commonBranch: {fileID: 0}
+            isAvailable: 0
+            buttonReference: {fileID: 0}
+          commonBranch: {fileID: 0}
+          isAvailable: 0
+          buttonReference: {fileID: 0}
+        - researchable: {fileID: 11400000, guid: 659c2b02dc5096d48b53b2d7f3018a74, type: 2}
+          subBranches:
+          - researchable: {fileID: 11400000, guid: 659c2b02dc5096d48b53b2d7f3018a74, type: 2}
+            subBranches: []
+            commonBranch: {fileID: 0}
+            isAvailable: 0
+            buttonReference: {fileID: 0}
+          commonBranch: {fileID: 0}
+          isAvailable: 0
+          buttonReference: {fileID: 0}
+        - researchable: {fileID: 11400000, guid: 6bfdbcea52f8b9640ab0164e77535c87, type: 2}
+          subBranches: []
+          commonBranch: {fileID: 0}
+          isAvailable: 0
+          buttonReference: {fileID: 0}
+        commonBranch: {fileID: 0}
+        isAvailable: 0
+        buttonReference: {fileID: 0}
+      commonBranch: {fileID: 0}
+      isAvailable: 0
+      buttonReference: {fileID: 0}
+    commonBranch: {fileID: 0}
+    isAvailable: 0
+    buttonReference: {fileID: 0}

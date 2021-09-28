@@ -7,6 +7,7 @@ public class BranchHandler : ScriptableObject
     [SerializeField] private new string name;
     [SerializeField] private Branch branch;
     public Branch @Branch => branch;
+    public string Name => name;
 }
 
 [System.Serializable]

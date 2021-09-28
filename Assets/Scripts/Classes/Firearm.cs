@@ -6,8 +6,15 @@ public class Firearm : Weapon
     [SerializeField] private float cooldown;
     [SerializeField] private GameObject bullet;
     [SerializeField] protected float damage;
+    private float initialDamage;
+    public float InitDamage => initialDamage;
     public GameObject Bullet => bullet;
     public float Cooldown => cooldown;
+    public float Damage => damage;
+    private void OnEnable()
+    {
+        initialDamage = damage;
+    }
     protected void Shoot(GameObject owner, Transform target, float cone)
     {
         Vector2 pos = target.position - owner.transform.position;
@@ -23,5 +30,16 @@ public class Firearm : Weapon
             return;
         }
         Shoot(owner, target, 0);
+    }
+    public void Upgrade(float cooldown = 0, float damage = 0)
+    {
+        if (cooldown > 0)
+        {
+            this.cooldown = cooldown;
+        }
+        if (damage > 0)
+        {
+            this.damage = damage;
+        }
     }
 }

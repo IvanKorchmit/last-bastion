@@ -1,8 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
-public class ResearchUpgrade : ScriptableObject
+using UnityEngine.Networking;
+public abstract class ResearchUpgrade : ScriptableObject
 {
-
+    [SerializeField] protected int level;
+    public int Level => level;
+    public abstract void OnUpgrade();
 }
+

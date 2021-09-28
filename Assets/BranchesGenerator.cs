@@ -13,11 +13,16 @@ public class BranchesGenerator : MonoBehaviour
     private void Start()
     {
         //StartCoroutine(GenerateTreeRecursively(branches[0].Branch, Vector2.one, 0, null, branches[0].Branch.ChildBranches.Length));
-        TechTreeUtils.techBranch = branches[0].Branch.Copy();
         positions = new List<Vector2Int>();
-        GenerateTreeRecursively(TechTreeUtils.techBranch, Vector2Int.zero, 0, null, 0);
+        for (int i = 0; i < branches.Length; i++)
+        {
+            float fract = branches.Length - 1 > 0 ? (float)i / (branches.Length - 1) * 2 - 1 : 0;
+            Vector2 dir = new Vector2(fract, fract);
+            GenerateTreeRecursively(branches[i].Branch, new Vector2Int((int)fract*10,(int)fract*10), 0, null, dir);
+
+        }
     }
-    private void GenerateTreeRecursively(Branch branch, Vector2Int position, int index, GameObject previousObject, int prevLen)
+    private void GenerateTreeRecursively(Branch branch, Vector2Int position, int index, GameObject previousObject, Vector2 branchGrowthDirection)
     {
         if (branch.ChildBranches == null || branch.ChildBranches.Length == 0)
         {
@@ -33,8 +38,9 @@ public class BranchesGenerator : MonoBehaviour
             #region main logic
             var button = CreateButton(branch.ChildBranches[i]);
             Vector2 sizeDelta = (button.transform as RectTransform).sizeDelta;
-            Vector2 dir = (Vector2.down + position / sizeDelta);
+            Vector2 dir = (branchGrowthDirection + position / sizeDelta);
             dir.x = branch.ChildBranches.Length - 1 > 0 ? (float)i / (branch.ChildBranches.Length - 1) * 2 - 1 : 0;
+            dir.x *= branchGrowthDirection.x;
             dir *= sizeDelta * 1.5f;
             while (IsConflicting(Vector2Int.FloorToInt(dir)))
             {
@@ -58,7 +64,7 @@ public class BranchesGenerator : MonoBehaviour
             }
             positions.Add(Vector2Int.FloorToInt(dir));
             #endregion
-            GenerateTreeRecursively(branch.ChildBranches[i], Vector2Int.FloorToInt(dir), index, button.gameObject, branch.ChildBranches.Length);
+            GenerateTreeRecursively(branch.ChildBranches[i], Vector2Int.FloorToInt(dir), index, button.gameObject, branchGrowthDirection);
         }
     }
     private void GenerateLine(Vector2 a, Vector2 b)
@@ -79,12 +85,10 @@ public class BranchesGenerator : MonoBehaviour
     {
         var button = Instantiate(skillButtonPrefab, transform).GetComponent<ResearchButton>();
         button.branch = branch;
-        button.res = branch.Researchable;
         return button;
     }
     private bool IsConflicting(Vector2Int d)
     {
-        
         return positions.Contains(d);
     }
 }

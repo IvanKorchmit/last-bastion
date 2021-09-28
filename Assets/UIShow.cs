@@ -10,6 +10,7 @@ public class UIShow : MonoBehaviour
     public TextMeshProUGUI humanResourcesCounterText;
     public RectTransform shopWindow;
     public RectTransform dialoguePanel;
+    public RectTransform researchCanvas;
     public GameObject choiceButtonPrefab;
     public Image chaosBar;
     private void Start()
@@ -22,6 +23,7 @@ public class UIShow : MonoBehaviour
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.E)) ShowUpWindowShop();
+        if (Input.GetKeyDown(KeyCode.R)) DisplayResearch();
     }
     private void OnGUI()
     {
@@ -41,5 +43,9 @@ public class UIShow : MonoBehaviour
         {
             WavesUtils.DecrementTime();
         }
+    }
+    public void DisplayResearch()
+    {
+        researchCanvas.gameObject.SetActive(!researchCanvas.gameObject.activeSelf);
     }
 }

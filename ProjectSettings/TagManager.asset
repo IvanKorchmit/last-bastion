@@ -5,8 +5,8 @@ TagManager:
   serializedVersion: 2
   tags:
   - Enemy
-  - Ore
   - Wall
+  - Lamp
   layers:
   - Default
   - TransparentFX

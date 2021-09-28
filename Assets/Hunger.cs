@@ -53,3 +53,7 @@ public class Hunger : GameEvent
         return true;
     }
 }
+public interface IEventEndable
+{
+    void End();
+}
