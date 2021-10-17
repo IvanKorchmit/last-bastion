@@ -7,5 +7,6 @@ public abstract class ResearchUpgrade : ScriptableObject
     [SerializeField] protected int level;
     public int Level => level;
     public abstract void OnUpgrade();
+
 }
 

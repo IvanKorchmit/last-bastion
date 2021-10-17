@@ -16,17 +16,12 @@ MonoBehaviour:
   branch:
     researchable: {fileID: 11400000, guid: 60376f45b58ae304dba6eae255ba308b, type: 2}
     subBranches:
-    - researchable: {fileID: 11400000, guid: 0073f3cc86e991c46bb3daa7a28033c0, type: 2}
+    - researchable: {fileID: 11400000, guid: 60376f45b58ae304dba6eae255ba308b, type: 2}
       subBranches:
-      - researchable: {fileID: 11400000, guid: b62a339afad5665428ed89525abe0473, type: 2}
+      - researchable: {fileID: 11400000, guid: 0073f3cc86e991c46bb3daa7a28033c0, type: 2}
         subBranches:
-        - researchable: {fileID: 11400000, guid: c6a411cc185f156469e7de5254168a5e, type: 2}
-          subBranches:
-          - researchable: {fileID: 11400000, guid: f44de941286fa8e49bcb5940cfde6e4e, type: 2}
-            subBranches: []
-            commonBranch: {fileID: 0}
-            isAvailable: 0
-            buttonReference: {fileID: 0}
+        - researchable: {fileID: 11400000, guid: b62a339afad5665428ed89525abe0473, type: 2}
+          subBranches: []
           commonBranch: {fileID: 0}
           isAvailable: 0
           buttonReference: {fileID: 0}

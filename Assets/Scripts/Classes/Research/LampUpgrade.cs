@@ -5,10 +5,12 @@ using TechnologyTree.Researches.Interfaces;
 public class LampUpgrade : ResearchUpgrade, IFloatUpgrade
 {
     private const float RADIUS_INCREASEMENT = 5.0f;
+
     public float GetFloatOnLevel()
     {
         return (float)level / RADIUS_INCREASEMENT;
     }
+
     public override void OnUpgrade()
     {
         Light2D[] lights = GameObject.FindObjectsOfType<Light2D>();

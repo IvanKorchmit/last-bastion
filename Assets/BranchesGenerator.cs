@@ -13,19 +13,33 @@ public class BranchesGenerator : MonoBehaviour
     private void Start()
     {
         //StartCoroutine(GenerateTreeRecursively(branches[0].Branch, Vector2.one, 0, null, branches[0].Branch.ChildBranches.Length));
+        for (int i = 0; i < branches.Length; i++)
+        {
+            var copy = Instantiate(branches[i]);
+            branches[i] = copy;
+        }
         positions = new List<Vector2Int>();
         for (int i = 0; i < branches.Length; i++)
         {
+            float ang = ((float)i / branches.Length) * 360f;
             float fract = branches.Length - 1 > 0 ? (float)i / (branches.Length - 1) * 2 - 1 : 0;
-            Vector2 dir = new Vector2(fract, fract);
-            GenerateTreeRecursively(branches[i].Branch, new Vector2Int((int)fract*10,(int)fract*10), 0, null, dir);
+            Vector2 dir = (Vector2)(Quaternion.Euler(0, 0, ang) * Vector2.right).normalized;
+            Debug.Log(dir + " " + ang);
+            GenerateTreeRecursively(branches[i].Branch, new Vector2Int((int)fract * 10, 0), 0, null, dir);
 
         }
     }
     private void GenerateTreeRecursively(Branch branch, Vector2Int position, int index, GameObject previousObject, Vector2 branchGrowthDirection)
     {
-        if (branch.ChildBranches == null || branch.ChildBranches.Length == 0)
+        if ((branch.ChildBranches == null || branch.ChildBranches.Length == 0) && branch.CommonBranch == null)
         {
+            return;
+        }
+        else if (branch.CommonBranch != null)
+        {
+            Debug.Log("Found common");  
+            branch = branch.CommonBranch.Branch.Copy();
+            GenerateTreeRecursively(branch, Vector2Int.FloorToInt(position), index, previousObject, branchGrowthDirection);
             return;
         }
         if (index == 0)
@@ -36,16 +50,15 @@ public class BranchesGenerator : MonoBehaviour
         for (int i = 0; i < branch.ChildBranches.Length; i++)
         {
             #region main logic
+            float fract = (branch.ChildBranches.Length - 1 > 0 ? (float)i / (branch.ChildBranches.Length - 1) * 2 - 1 : 0);
             var button = CreateButton(branch.ChildBranches[i]);
             Vector2 sizeDelta = (button.transform as RectTransform).sizeDelta;
+            Vector2 fractVec = new Vector2(fract, fract);
             Vector2 dir = (branchGrowthDirection + position / sizeDelta);
-            dir.x = branch.ChildBranches.Length - 1 > 0 ? (float)i / (branch.ChildBranches.Length - 1) * 2 - 1 : 0;
-            dir.x *= branchGrowthDirection.x;
             dir *= sizeDelta * 1.5f;
             while (IsConflicting(Vector2Int.FloorToInt(dir)))
             {
-                dir += Vector2.down * sizeDelta;
-                dir.x *= 4 * sizeDelta.x;
+                dir += branchGrowthDirection * sizeDelta;
             }
             if (index == 1)
             {
