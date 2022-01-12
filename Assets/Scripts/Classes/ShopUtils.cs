@@ -6,6 +6,8 @@ using Pathfinding;
 using System.Linq;
 using UnityEngine.UI;
 using Dialogue;
+using UnityEngine.EventSystems;
+
 public static class ShopUtils
 {
     public static UIShow UIPanel_Reference;
@@ -354,55 +356,26 @@ public static class WeatherUtils
         currentEvent.Launch();
     }
 }
-
-
-namespace TechnologyTree
+public class InputInfo
 {
-        public static class Upgrades
-        {
-            private static List<ResearchUpgrade> researches;
-            static Upgrades()
-            {
-                researches = new List<ResearchUpgrade>();
-            }
-            public static ResearchUpgrade GetLatestUpgrade(ResearchUpgrade r)
-            {
-                foreach (var item in researches)
-                {
-                    if(item.GetType() == r.GetType())
-                    {
-                        return item;
-                    }
-                }
-                return null;
-            }
-            public static void Add(ResearchUpgrade r)
-            {
-                for (int x = 0; x < researches.Count; x++)
-                {
-                    ResearchUpgrade i = researches[x];
-                    if(i.GetType() == r.GetType())
-                    {
-                        researches[x] = i;
-                        ApplyUpgrades();
-                        return;
-                    }
-                }
-                researches.Add(r);
-                ApplyUpgrades();
-            }
-            public static void ApplyUpgrades()
-            {
-                foreach (var r in researches)
-                {
-                    r.OnUpgrade();
-                }
-            }
-
-        }
+    public enum CommandType
+    {
+        Move, Deselect
+    }
+    private CommandType command;
+    private Vector2 position;
+    public CommandType Command => command;
+    public Vector2 Position => position;
+    public InputInfo(Vector2 position, CommandType command)
+    {
+        this.position = position;
+        this.command = command;
+    }
 }
 
 
-
-
-
+public interface ISelectable
+{
+    void OnSelect();
+    void OnDeselect();
+}

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Pathfinding;
-public class UnitAI : MonoBehaviour
+public class UnitAI : MonoBehaviour, ISelectable
 {
     [SerializeField] private WeaponBase weapon;
     protected RangeFinder range;
@@ -138,4 +138,25 @@ public class UnitAI : MonoBehaviour
     {
         weapon.Use(gameObject, range.ClosestTarget);
     }
+
+    public void OnSelect()
+    {
+        PlayerInput.OnPlayerInput += PlayerInput_OnPlayerInput;
+    }
+
+    public void OnDeselect()
+    {
+        PlayerInput.OnPlayerInput -= PlayerInput_OnPlayerInput;
+    }
+
+    private void PlayerInput_OnPlayerInput(InputInfo info)
+    {
+        if (info.Command == InputInfo.CommandType.Move)
+        {
+            FindPath(transform.position, info.Position);
+            
+        }
+    }
+
+
 }
