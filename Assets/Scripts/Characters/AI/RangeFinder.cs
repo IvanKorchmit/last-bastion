@@ -36,11 +36,8 @@ public class RangeFinder : MonoBehaviour
                 {
                     if (collision.CompareTag("Enemy"))
                     {
-                        if (CheckLighting(collision.transform))
-                        {
                             targets.Add(collision.transform);
                             Resort();
-                        }
                     }
                 }
             }
@@ -54,11 +51,8 @@ public class RangeFinder : MonoBehaviour
             {
                 if (collision.TryGetComponent(out AIBase ai))
                 {
-                    if (CheckLighting(collision.transform))
-                    {
                         targets.Add(collision.transform);
                         Resort();
-                    }
                 }
             }
             else
@@ -105,23 +99,5 @@ public class RangeFinder : MonoBehaviour
         }
         targets = newList;
         
-    }
-    public static bool CheckLighting(Transform t)
-    {
-        Light2D[] lights = GameObject.FindObjectsOfType<Light2D>();
-        foreach (var l in lights)
-        {
-            if (l.lightType == Light2D.LightType.Point)
-            {
-                float dist = Vector2.Distance(t.position, l.gameObject.transform.position);
-                if (dist <= l.pointLightInnerRadius)
-                {
-                    // Debug.Log($"d: {dist}\nr:{l.pointLightInnerRadius}");
-                    // Debug.Log($"{t.name} at light");
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 }

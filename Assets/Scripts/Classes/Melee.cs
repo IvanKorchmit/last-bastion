@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 [CreateAssetMenu(fileName = "New Melee", menuName = "Weapons/Melee")]
-public class Melee : Weapon
+public class Melee : WeaponBase
 {
     [SerializeField] private float meleeDamage;
     [SerializeField] private float range;

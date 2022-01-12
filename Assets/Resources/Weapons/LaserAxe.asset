@@ -13,4 +13,5 @@ MonoBehaviour:
   m_Name: LaserAxe
   m_EditorClassIdentifier: 
   meleeDamage: 10
-  range: 1.5
+  range: 3
+  cooldown: 5

@@ -2,19 +2,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Pathfinding;
-
 public class UnitAI : MonoBehaviour
 {
-    [SerializeField] private Weapon weapon;
+    [SerializeField] private WeaponBase weapon;
     protected RangeFinder range;
     private bool isAttacking;
     protected Path path;
     [SerializeField] private float speed;
     private Seeker seeker;
     protected Vector2 moveDirection;
-    protected Vector2 MoveDirectionP => moveDirection * speed * Time.deltaTime;
-    
-    public Weapon @Weapon
+
+    public WeaponBase @Weapon
     {
         get
         {
@@ -28,7 +26,7 @@ public class UnitAI : MonoBehaviour
     }
     public void OnPathCalculated(Path p)
     {
-        if(!p.error)
+        if (!p.error)
         {
             path = p;
         }
@@ -83,9 +81,9 @@ public class UnitAI : MonoBehaviour
     {
         range = GetComponentInChildren<RangeFinder>();
         seeker = GetComponent<Seeker>();
-        if (weapon is Melee m )
+        if (weapon is Melee m)
         {
-            TimerUtils.AddTimer(0.02f,()=>range.Radius = m.Range);
+            TimerUtils.AddTimer(0.02f, () => range.Radius = m.Range);
         }
     }
     protected virtual void Update()
@@ -96,44 +94,45 @@ public class UnitAI : MonoBehaviour
             if (range.ClosestTarget != null)
             {
                 isAttacking = true;
+                moveDirection = new Vector2();
                 TimerUtils.AddTimer(f.Cooldown, Attack);
             }
             else
             {
                 isAttacking = false;
+                MoveAlong();
             }
         }
         else if (weapon is Melee m)
         {
             GameObject[] ens = GameObject.FindGameObjectsWithTag("Enemy");
-            GameObject en = null;
-            foreach (var e in ens)
+            if (ens != null && ens.Length > 0)
             {
-                if (RangeFinder.CheckLighting(e.transform))
+                GameObject en = ens[0];
+                if (en != null && (path == null || path.path.Count == 0))
                 {
-                    en = e;
-                    break;
+                    FindPath(transform.position, en.transform.position);
+                }
+                if (range.ClosestTarget != null)
+                {
+                    TimerUtils.AddTimer(m.Cooldown, () =>
+                     {
+                         if (range.ClosestTarget != null)
+                         {
+                             if (range.ClosestTarget.TryGetComponent(out IDamagable damage))
+                             {
+                                 damage.Damage(m.MeleeDamage, gameObject);
+                             }
+                         }
+                     });
+                }
+                else
+                {
+                    isAttacking = false;
                 }
             }
-            if (en != null && (path == null || path.path.Count == 0))
-            {
-                FindPath(transform.position, en.transform.position);
-            }
-            if (range.ClosestTarget != null)
-            {
-                TimerUtils.AddTimer(m.Cooldown, () =>
-                 {
-                     if (range.ClosestTarget != null)
-                     {
-                         if (range.ClosestTarget.TryGetComponent(out IDamagable damage))
-                         {
-                             damage.Damage(m.MeleeDamage, gameObject);
-                         }
-                     }
-                 });
-            }
+            MoveAlong();
         }
-        MoveAlong();
     }
     public void Attack()
     {

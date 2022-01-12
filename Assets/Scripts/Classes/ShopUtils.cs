@@ -47,11 +47,11 @@ public class Good
 {
     [SerializeField] private int cost;
     [SerializeField] private GameObject prefab;
-    [SerializeField] private Weapon weapon;
+    [SerializeField] private WeaponBase weapon;
     [SerializeField] private bool mustCome;
     public int Cost => cost;
     public GameObject Prefab => prefab;
-    public Weapon @Weapon => weapon;
+    public WeaponBase @Weapon => weapon;
     public bool MustCome => mustCome;
 }
 public static class GameUtils
@@ -401,3 +401,8 @@ namespace TechnologyTree
 
         }
 }
+
+
+
+
+

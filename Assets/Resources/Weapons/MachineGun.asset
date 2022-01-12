@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cooldown: 0.25
   bullet: {fileID: 5316621844221619973, guid: 4fd4933215f095d4486209f9ac448a97, type: 3}
-  damage: 2.5
+  damage: 1
