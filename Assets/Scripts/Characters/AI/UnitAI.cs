@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using Pathfinding;
 public class UnitAI : MonoBehaviour, ISelectable
 {
@@ -11,7 +12,7 @@ public class UnitAI : MonoBehaviour, ISelectable
     [SerializeField] private float speed;
     private Seeker seeker;
     protected Vector2 moveDirection;
-
+    [SerializeField] private Image hpBar;
     public WeaponBase @Weapon
     {
         get
@@ -142,11 +143,14 @@ public class UnitAI : MonoBehaviour, ISelectable
     public void OnSelect()
     {
         PlayerInput.OnPlayerInput += PlayerInput_OnPlayerInput;
+        hpBar.color = Color.yellow;
     }
 
     public void OnDeselect()
     {
         PlayerInput.OnPlayerInput -= PlayerInput_OnPlayerInput;
+        hpBar.color = Color.green;
+
     }
 
     private void PlayerInput_OnPlayerInput(InputInfo info)
@@ -155,6 +159,10 @@ public class UnitAI : MonoBehaviour, ISelectable
         {
             FindPath(transform.position, info.Position);
             
+        }
+        else if (info.Command == InputInfo.CommandType.Deselect)
+        {
+            OnDeselect();
         }
     }
 

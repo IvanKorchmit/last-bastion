@@ -36,12 +36,13 @@ class PlayerInput : MonoBehaviour
 
     private void OnSingleClick()
     {
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        Vector2 origin = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        RaycastHit2D ray = Physics2D.Raycast(origin, Vector2.zero, float.MaxValue, LayerMask.GetMask("Player"));
         if (Input.GetKey(KeyCode.LeftControl))
         {
-            if (Physics.Raycast(ray, out RaycastHit hit, float.MaxValue, LayerMask.GetMask("Player")))
+            if (ray.collider != null)
             {
-                if (hit.collider.TryGetComponent(out ISelectable selectable))
+                if (ray.collider.TryGetComponent(out ISelectable selectable))
                 {
                     selectable.OnSelect();
                 }
@@ -56,12 +57,7 @@ class PlayerInput : MonoBehaviour
     }
     private void OnDoubleClick()
     {
-
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        if (Physics.Raycast(ray, out RaycastHit hit, float.MaxValue, LayerMask.GetMask("Obstacle")))
-        {
-            OnPlayerInput?.Invoke(new InputInfo(hit.point, InputInfo.CommandType.Move));
-
-        }
+        Debug.Log("On double click");
+        OnPlayerInput?.Invoke(new InputInfo(Camera.main.ScreenToWorldPoint(Input.mousePosition), InputInfo.CommandType.Move));
     }
 }

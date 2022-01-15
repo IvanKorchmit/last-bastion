@@ -111,8 +111,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: -0.15, y: -0.0371}
-  m_SizeDelta: {x: 1.6875, y: 2.0945}
+  m_AnchoredPosition: {x: -0.15, y: 0.2991}
+  m_SizeDelta: {x: 1.6875, y: 2.767}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!223 &826626250031650453
 Canvas:
@@ -449,6 +449,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weapon: {fileID: 11400000, guid: 10697e5098a4fc441b12c5d4a744d32f, type: 2}
   speed: 4
+  hpBar: {fileID: 5320611212860752612}
 --- !u!114 &-1235085701320532945
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -489,7 +490,7 @@ GameObject:
   - component: {fileID: 9198191628072726596}
   - component: {fileID: 9198191628072726597}
   - component: {fileID: 9198191628072726595}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Range
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -571,7 +572,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9198191629167371462}
   - component: {fileID: 9198191629167371461}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Visuals
   m_TagString: Untagged
   m_Icon: {fileID: 0}
