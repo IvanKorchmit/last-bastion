@@ -15,7 +15,7 @@ public class Firearm : WeaponBase
     {
         initialDamage = damage;
     }
-    protected void Shoot(GameObject owner, Transform target, float cone)
+    protected void Shoot(Transform owner, Transform target, float cone)
     {
         Vector2 pos = target.position - owner.transform.position;
         
@@ -23,9 +23,9 @@ public class Firearm : WeaponBase
         float angle = Mathf.Atan2(pos.y, pos.x) * Mathf.Rad2Deg;
         Quaternion q = Quaternion.Euler(0, 0, angle + Random.Range(-cone, cone));
         var bullet = Instantiate(this.bullet, owner.transform.position, q);
-        bullet.GetComponent<Projectile>().Initialize(damage, owner.CompareTag("Enemy"));
+        bullet.GetComponent<Projectile>().Initialize(damage, owner.root.CompareTag("Enemy"), owner.root.gameObject);
     }
-    public override void Use(GameObject owner, Transform target)
+    public override void Use(Transform owner, Transform target)
     {
         if(target == null)
         {

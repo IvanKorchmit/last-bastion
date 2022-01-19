@@ -4,12 +4,13 @@ public class AcidRain : GameEvent, IEventEndable
 {
     public override void Launch()
     {
-        WavesUtils.LightAnimator.SetTrigger("AcidRain");
+        WavesUtils.LightAnimator.SetBool("isAcid",true);
         WeatherUtils.status = WeatherUtils.Status.acid_rain;
     }
     public void End()
     {
-        WavesUtils.LightAnimator.SetTrigger("AcidRain");
+        WavesUtils.LightAnimator.SetBool("isAcid",false);
         WeatherUtils.status = WeatherUtils.Status.none;
     }
 }
+

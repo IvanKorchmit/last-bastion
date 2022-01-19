@@ -19,7 +19,7 @@ public class Stats : MonoBehaviour, IDamagable
     private bool isUnit;
     private float healthMax;
     private float armorMax = 10f;
-
+    private GameObject lastDamager;
     public float Health => health;
     public float Armor => armor;
     public float MeleeDamage => meleeDamage;
@@ -28,16 +28,21 @@ public class Stats : MonoBehaviour, IDamagable
     public void Damage(float d, GameObject owner)
     {
         health -= d;
+        lastDamager = owner;
     }
     private void CheckHealth()
     {
         if(health <= 0)
         {
-            if(CompareTag("Enemy"))
+            if (CompareTag("Enemy"))
             {
-                TimerUtils.AddTimer(0.02f, WavesUtils.CheckRemainings); 
-                ShopUtils.GainMoney(100);
+                if (lastDamager != null && lastDamager.CompareTag("Player"))
+                {
+                    ShopUtils.GainMoney(100);
+                }
+                TimerUtils.AddTimer(0.02f, WavesUtils.CheckRemainings);
             }
+            GetComponent<IUnsub>().UnsubAll();
             gameObject.SetActive(false);
 
         }

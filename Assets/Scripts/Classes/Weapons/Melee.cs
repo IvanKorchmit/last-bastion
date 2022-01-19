@@ -9,11 +9,11 @@ public class Melee : WeaponBase
     public float Range => range;
     public float MeleeDamage => meleeDamage;
     public float Cooldown => cooldown;
-    public override void Use(GameObject owner, Transform target)
+    public override void Use(Transform owner, Transform target)
     {
         if (target != null)
         {
-            target.GetComponent<IDamagable>().Damage(meleeDamage, owner);
+            target.GetComponent<IDamagable>().Damage(meleeDamage, owner.root.gameObject);
         }
     }
 }

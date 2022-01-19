@@ -3,13 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Pathfinding;
-public class UnitAI : MonoBehaviour, ISelectable
+public class UnitAI : MonoBehaviour, ISelectable, IUnsub
 {
+    private Stats stats;
+    [SerializeField] private Transform shootPoint;
     [SerializeField] private WeaponBase weapon;
     protected RangeFinder range;
     private bool isAttacking;
     protected Path path;
     [SerializeField] private float speed;
+    private float initSpeed;
     private Seeker seeker;
     protected Vector2 moveDirection;
     [SerializeField] private Image hpBar;
@@ -25,6 +28,8 @@ public class UnitAI : MonoBehaviour, ISelectable
         }
 
     }
+
+
     public void OnPathCalculated(Path p)
     {
         if (!p.error)
@@ -81,12 +86,27 @@ public class UnitAI : MonoBehaviour, ISelectable
     protected virtual void Start()
     {
         range = GetComponentInChildren<RangeFinder>();
+        stats = GetComponent<Stats>();
         seeker = GetComponent<Seeker>();
+        initSpeed = speed;
         if (weapon is Melee m)
         {
             TimerUtils.AddTimer(0.02f, () => range.Radius = m.Range);
         }
+        Calendar.OnWinter_Property += Calendar_OnWinter;
+        WeatherUtils.OnAcidRain += WeatherUtils_OnAcidRain;
     }
+
+    private void WeatherUtils_OnAcidRain(float value)
+    {
+        stats.Damage(value, null);
+    }
+
+    private void Calendar_OnWinter(bool isWinter)
+    {
+        speed = isWinter ? initSpeed / 3 : initSpeed;
+    }
+
     protected virtual void Update()
     {
         transform.Translate(moveDirection * speed * Time.deltaTime);
@@ -137,7 +157,7 @@ public class UnitAI : MonoBehaviour, ISelectable
     }
     public void Attack()
     {
-        weapon.Use(gameObject, range.ClosestTarget);
+        weapon.Use(shootPoint, range.ClosestTarget);
     }
 
     public void OnSelect()
@@ -165,6 +185,15 @@ public class UnitAI : MonoBehaviour, ISelectable
             OnDeselect();
         }
     }
+    public void UnsubAll()
+    {
+        Calendar.OnWinter_Property -= Calendar_OnWinter;
+        WeatherUtils.OnAcidRain -= WeatherUtils_OnAcidRain;
+    }
+}
 
 
+public interface IUnsub
+{
+    void UnsubAll();
 }

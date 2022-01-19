@@ -4,7 +4,7 @@ public class CalendarManager : MonoBehaviour
 {
     [SerializeField]
     private Calendar.Day[] days;
-    private void Start()
+    private void Awake()
     {
         Calendar.days = days;
     }

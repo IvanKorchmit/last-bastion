@@ -2,6 +2,7 @@
 
 public class RangedAI : AIBase
 {
+    [SerializeField] protected Transform shootPoint;
     [SerializeField] private WeaponBase weapon;
 
     protected override void Start()
@@ -16,7 +17,7 @@ public class RangedAI : AIBase
     {
         if (target != null)
         {
-            weapon.Use(gameObject, target.transform);
+            weapon.Use(shootPoint, target.transform);
         }
     }
 }

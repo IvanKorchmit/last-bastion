@@ -209,7 +209,7 @@ public static class WavesUtils
             areIncoming = false;
             timeRemaining = DeFAULT_TIME;
             waveNumber++;
-            Calendar.Update();
+            Calendar.CalculateResources();
         }
     }
     public static WaveProps FindWave(WaveProps[] waves)
@@ -241,6 +241,21 @@ public static class Calendar
 {
     private static Animator cameraAnimatorReference = Camera.main.GetComponent<Animator>();
     public static Day[] days;
+    public delegate void WinterDelegate(bool isWinter);
+    private static event WinterDelegate OnWinter;
+    public static event WinterDelegate OnWinter_Property 
+    {
+        add
+        {
+            OnWinter += value;
+            Update();
+        }
+        remove
+        {
+            OnWinter -= value;
+            Update();
+        }
+    }
     [System.Serializable]
     public struct Day
     {
@@ -251,13 +266,17 @@ public static class Calendar
     public static Animator CameraAnimatorReference => cameraAnimatorReference;
     public static void Update()
     {
-        cameraAnimatorReference.SetBool("isWinter", IsWinter());
+        OnWinter?.Invoke(IsWinter(false));
+    }
+    public static void CalculateResources()
+    {
+        IsWinter(true);
         if (WavesUtils.WaveNumber % 3 == 0)
         {
             HumanResourcesUtils.IncreaseHumanResources();
         }
     }
-    public static bool IsWinter()
+    public static bool IsWinter(bool doApply)
     {
         bool isWinter = false;
         for (int i = days.Length - 1; i >= 0; i--)
@@ -267,7 +286,10 @@ public static class Calendar
             {
                 if (day.gameEvent != null)
                 {
-                    WeatherUtils.ApplyEvent(day.gameEvent);
+                    if (doApply)
+                    {
+                        WeatherUtils.ApplyEvent(day.gameEvent);
+                    }
                 }
                 return day.isWinter;
             }
@@ -320,30 +342,32 @@ public static class HumanResourcesUtils
 
 public static class WeatherUtils
 {
+    private static BoxCollider2D area = GameObject.Find("TechnicalStuff/MeteorArea").GetComponent<BoxCollider2D>();
     private static GameEvent currentEvent = null;
+    public delegate void DamagableDel(float value);
+    public static event DamagableDel OnAcidRain;
     public enum Status
     {
-        none, acid_rain
+        none, acid_rain, meteor_rain
     }
     public static Status status;
     public static void Update()
     {
-        switch (status)
+        if (WavesUtils.AreIncoming)
         {
-            case Status.none:
-                break;
-            case Status.acid_rain:
-                {
-                    IDamagable[] damagables = (IDamagable[])GameObject.FindObjectsOfType<MonoBehaviour>().OfType<IDamagable>().ToArray();
-
-                    foreach (IDamagable d in damagables)
+            switch (status)
+            {
+                case Status.none:
+                    break;
+                case Status.acid_rain:
                     {
-                        d.Damage(2, null);
+                        OnAcidRain?.Invoke(Random.Range(2f, 4f));
                     }
-                }
-                break;
-            default:
-                break;
+                    break;
+                case Status.meteor_rain:
+                    GameObject.Instantiate((currentEvent as MeteorRain).MeteorPrefab, SpawnerManager.PositionInside(area), Quaternion.identity);
+                    break;
+            }
         }
     }
     public static void ApplyEvent(GameEvent e)

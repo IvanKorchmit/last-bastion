@@ -6,11 +6,13 @@ public class Projectile : MonoBehaviour
 {
     [SerializeField] private float speed;
     [SerializeField] private float damage;
+    [SerializeField] private GameObject owner;
     private bool isEnemy;
-    public void Initialize(float damage, bool isEnemy)
+    public void Initialize(float damage, bool isEnemy, GameObject owner)
     {
         this.damage = damage;
         this.isEnemy = isEnemy;
+        this.owner = owner;
     }
     private void Start()
     {
@@ -22,7 +24,7 @@ public class Projectile : MonoBehaviour
         {
             if(collision.TryGetComponent(out IDamagable damage))
             {
-                damage.Damage(this.damage, null);
+                damage.Damage(this.damage, owner);
                 Transform trail = transform.Find("Trail");
                 if (trail != null)
                 {

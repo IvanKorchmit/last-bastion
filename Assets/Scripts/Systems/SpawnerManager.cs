@@ -16,17 +16,19 @@ public class SpawnerManager : MonoBehaviour
         WavesUtils.SetIncoming();
         for (int i = 0; i < quantity; i++)
         {
-            Instantiate(enemies[Random.Range(0, enemies.Length)], PositionInside(), Quaternion.identity);
+            Instantiate(enemies[Random.Range(0, enemies.Length)], PositionInside(square), Quaternion.identity);
         }
-        
+
     }
-    private Vector2 PositionInside()
+    public static Vector2 PositionInside(BoxCollider2D square)
     {
         Vector2 size = square.bounds.size;
         Vector2 topLeft = (Vector2)square.bounds.center - size / 2;
         Vector2 bottomRight = (Vector2)square.bounds.center + size / 2;
         // Debug.Log((Vector2)transform.position - (topLeft * Random.value - bottomRight * Random.value));
-        return (Vector2)transform.position - (topLeft * Random.value - bottomRight * Random.value);
+        return new Vector2(
+        Random.Range(square.bounds.min.x, square.bounds.max.x),
+        Random.Range(square.bounds.min.y, square.bounds.max.y));
     }
     private void Update()
     {

@@ -4,5 +4,5 @@ using UnityEngine;
 
 public abstract class WeaponBase : ScriptableObject
 {
-    public abstract void Use(GameObject owner, Transform target);
+    public abstract void Use(Transform owner, Transform target);
 }

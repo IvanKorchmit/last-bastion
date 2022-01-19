@@ -17,13 +17,13 @@ class PlayerInput : MonoBehaviour
         }
         else if (Input.GetKeyDown(KeyCode.Mouse0))
         {
-            time = doubleClickTime;
             clicks++;
-            if (clicks == 1)
+            if (clicks == 1 && time <= 0)
             {
                 OnSingleClick();
 
             }
+            time = doubleClickTime;
         }
         else if (time < 0)
         {

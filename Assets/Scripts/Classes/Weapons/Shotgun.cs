@@ -5,7 +5,7 @@ public class Shotgun : Firearm
 {
     [SerializeField] private int pellets;
     [SerializeField] private float cone;
-    public override void Use(GameObject owner, Transform target)
+    public override void Use(Transform owner, Transform target)
     {
         for (int i = 0; i < pellets; i++)
         {

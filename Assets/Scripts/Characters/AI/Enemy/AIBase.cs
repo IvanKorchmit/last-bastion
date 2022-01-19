@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Pathfinding;
 [RequireComponent(typeof(Stats))]
-public class AIBase : MonoBehaviour
+public class AIBase : MonoBehaviour, IUnsub
 {
     private Vector2 moveDirection;
     private Stats stats;
@@ -11,14 +11,28 @@ public class AIBase : MonoBehaviour
     private Path path;
     private RangeFinder range;
     [SerializeField] private float speed;
+    private float initSpeed;
     [SerializeField] private bool isAttacking;
     protected IDamagable target;
     protected virtual void Start()
     {
+        initSpeed = speed;
         stats = GetComponent<Stats>();
         seeker = GetComponent<Seeker>();
         range = GetComponentInChildren<RangeFinder>();
+        WeatherUtils.OnAcidRain += WeatherUtils_OnAcidRain;
+        Calendar.OnWinter_Property += Calendar_OnWinter;
 
+    }
+
+    private void Calendar_OnWinter(bool isWinter)
+    {
+        speed = isWinter ? initSpeed / 3 : initSpeed;
+    }
+
+    private void WeatherUtils_OnAcidRain(float value)
+    {
+        stats.Damage(value, null);
     }
 
     protected virtual void Update()
@@ -122,6 +136,12 @@ public class AIBase : MonoBehaviour
                 return;
             }
         }
+    }
+
+    public void UnsubAll()
+    {
+        WeatherUtils.OnAcidRain -= WeatherUtils_OnAcidRain;
+        Calendar.OnWinter_Property -= Calendar_OnWinter;
     }
 }
 
