@@ -6,7 +6,7 @@ TagManager:
   tags:
   - Enemy
   - Wall
-  - Lamp
+  - SnowParticle
   layers:
   - Default
   - TransparentFX
@@ -43,6 +43,12 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Fog
+    uniqueID: 2872894461
+    locked: 0
+  - name: Rain
+    uniqueID: 2134155249
     locked: 0
   - name: UI
     uniqueID: 3809161845

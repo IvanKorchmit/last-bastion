@@ -6,6 +6,8 @@ public class Melee : WeaponBase
     [SerializeField] private float meleeDamage;
     [SerializeField] private float range;
     [SerializeField] private float cooldown;
+    [SerializeField] private AudioClip damageSound;
+    public AudioClip DamageSound => damageSound;
     public float Range => range;
     public float MeleeDamage => meleeDamage;
     public float Cooldown => cooldown;

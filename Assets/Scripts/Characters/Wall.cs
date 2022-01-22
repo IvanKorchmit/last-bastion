@@ -26,7 +26,6 @@ public class Wall : MonoBehaviour, IDamagable
         if(health <= 0)
         {
             Collider2D coll = GetComponent<Collider2D>();
-            HumanResourcesUtils.IncreaseChaos(0.06f);
             coll.enabled = false;
             AstarPath.active.UpdateGraphs(coll.bounds);
             Destroy(gameObject);

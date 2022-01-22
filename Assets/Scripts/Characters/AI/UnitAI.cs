@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using Pathfinding;
 public class UnitAI : MonoBehaviour, ISelectable, IUnsub
 {
+    [SerializeField] private AudioClip acidDamage;
     private Stats stats;
     [SerializeField] private Transform shootPoint;
     [SerializeField] private WeaponBase weapon;
@@ -16,6 +17,7 @@ public class UnitAI : MonoBehaviour, ISelectable, IUnsub
     private Seeker seeker;
     protected Vector2 moveDirection;
     [SerializeField] private Image hpBar;
+    private bool isFollowing;
     public WeaponBase @Weapon
     {
         get
@@ -37,7 +39,11 @@ public class UnitAI : MonoBehaviour, ISelectable, IUnsub
             path = p;
         }
     }
-    protected void FindPath(Vector2 s, Vector2 e)
+    public void Initialize(Vector2 target)
+    {
+        GetComponent<Seeker>().StartPath(transform.position, target, OnPathCalculated);
+    }
+    public void FindPath(Vector2 s, Vector2 e)
     {
         seeker.StartPath(s, e, OnPathCalculated);
     }
@@ -95,11 +101,23 @@ public class UnitAI : MonoBehaviour, ISelectable, IUnsub
         }
         Calendar.OnWinter_Property += Calendar_OnWinter;
         WeatherUtils.OnAcidRain += WeatherUtils_OnAcidRain;
+        AIBase.OnEnemyDeath += AIBase_OnEnemyDeath;
+    }
+
+    private void AIBase_OnEnemyDeath()
+    {
+        if (weapon is Melee m)
+            FollowEnemy(m);
+        else if (isFollowing)
+        {
+            FollowEnemy(null);
+        }
     }
 
     private void WeatherUtils_OnAcidRain(float value)
     {
         stats.Damage(value, null);
+        SoundManager.PlaySound(acidDamage, transform.position);
     }
 
     private void Calendar_OnWinter(bool isWinter)
@@ -112,6 +130,10 @@ public class UnitAI : MonoBehaviour, ISelectable, IUnsub
         transform.Translate(moveDirection * speed * Time.deltaTime);
         if (weapon is Firearm f)
         {
+            if (isFollowing)
+            {
+                FollowEnemy(null);
+            }
             if (range.ClosestTarget != null)
             {
                 isAttacking = true;
@@ -126,38 +148,49 @@ public class UnitAI : MonoBehaviour, ISelectable, IUnsub
         }
         else if (weapon is Melee m)
         {
-            GameObject[] ens = GameObject.FindGameObjectsWithTag("Enemy");
-            if (ens != null && ens.Length > 0)
-            {
-                GameObject en = ens[0];
-                if (en != null && (path == null || path.path.Count == 0))
-                {
-                    FindPath(transform.position, en.transform.position);
-                }
-                if (range.ClosestTarget != null)
-                {
-                    TimerUtils.AddTimer(m.Cooldown, () =>
-                     {
-                         if (range.ClosestTarget != null)
-                         {
-                             if (range.ClosestTarget.TryGetComponent(out IDamagable damage))
-                             {
-                                 damage.Damage(m.MeleeDamage, gameObject);
-                             }
-                         }
-                     });
-                }
-                else
-                {
-                    isAttacking = false;
-                }
-            }
-            MoveAlong();
+            FollowEnemy(m);
         }
     }
+
+    private void FollowEnemy(Melee m)
+    {
+        GameObject[] ens = GameObject.FindGameObjectsWithTag("Enemy");
+        if (ens != null && ens.Length > 0)
+        {
+            GameObject en = ens[0];
+            if (en != null && (path == null || path.path.Count == 0))
+            {
+                FindPath(transform.position, en.transform.position);
+            }
+            if (range.ClosestTarget != null && m != null)
+            {
+                TimerUtils.AddTimer(m.Cooldown, MeleeAttack);
+            }
+            else
+            {
+                isAttacking = false;
+            }
+        }
+        MoveAlong();
+    }
+
     public void Attack()
     {
         weapon.Use(shootPoint, range.ClosestTarget);
+    }
+    public void MeleeAttack()
+    {
+        if (weapon is Melee m)
+        {
+            if (range.ClosestTarget != null && isAttacking)
+            {
+                if (range.ClosestTarget.TryGetComponent(out IDamagable damage))
+                {
+                    damage.Damage(m.MeleeDamage, gameObject);
+                    SoundManager.PlaySound(m.DamageSound, transform.position);
+                }
+            }
+        }
     }
 
     public void OnSelect()
@@ -178,7 +211,12 @@ public class UnitAI : MonoBehaviour, ISelectable, IUnsub
         if (info.Command == InputInfo.CommandType.Move)
         {
             FindPath(transform.position, info.Position);
+            isFollowing = false;
             
+        }
+        else if (info.Command == InputInfo.CommandType.Follow)
+        {
+            isFollowing = true;
         }
         else if (info.Command == InputInfo.CommandType.Deselect)
         {
@@ -189,6 +227,7 @@ public class UnitAI : MonoBehaviour, ISelectable, IUnsub
     {
         Calendar.OnWinter_Property -= Calendar_OnWinter;
         WeatherUtils.OnAcidRain -= WeatherUtils_OnAcidRain;
+        AIBase.OnEnemyDeath -= AIBase_OnEnemyDeath;
     }
 }
 

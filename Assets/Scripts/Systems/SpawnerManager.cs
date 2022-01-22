@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-
+using LastBastion.Waves;
 public class SpawnerManager : MonoBehaviour
 {
     private BoxCollider2D square;

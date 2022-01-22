@@ -7,11 +7,11 @@ public class MeteorRain : GameEvent, IEventEndable
     public GameObject MeteorPrefab => meteorPrefab;
     public override void Launch()
     {
-        WeatherUtils.status = WeatherUtils.Status.meteor_rain;
+        WeatherUtils.status = WeatherUtils.Status.MeteorRain;
     }
     public void End()
     {
-        WeatherUtils.status = WeatherUtils.Status.none;
+        WeatherUtils.status = WeatherUtils.Status.None;
     }
 }
 

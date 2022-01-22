@@ -10,6 +10,10 @@ class PlayerInput : MonoBehaviour
     private float time;
     private void Update()
     {
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            OnPlayerInput?.Invoke(new InputInfo(Camera.main.ScreenToWorldPoint(Input.mousePosition), InputInfo.CommandType.Follow));
+        }
         if (time > 0 && clicks >= 2 && !triggered)
         {
             OnDoubleClick();
@@ -57,7 +61,6 @@ class PlayerInput : MonoBehaviour
     }
     private void OnDoubleClick()
     {
-        Debug.Log("On double click");
         OnPlayerInput?.Invoke(new InputInfo(Camera.main.ScreenToWorldPoint(Input.mousePosition), InputInfo.CommandType.Move));
     }
 }

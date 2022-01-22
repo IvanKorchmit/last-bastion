@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using Dialogue;
+using LastBastion.Dialogue;
 
 [CreateAssetMenu(fileName = "Hunger", menuName = "Events/Choice/Hunger")]
 public class Hunger : GameEvent
@@ -8,7 +8,7 @@ public class Hunger : GameEvent
     {
         Content.Choice[] Ok = new Content.Choice[] { new Content.Choice("Okay",
             () => { 
-                DialogueUtils.CloseDIalogue();
+                UIShow.CloseDialogue();
                 return true;
             }, null, null)
         };
@@ -30,9 +30,9 @@ public class Hunger : GameEvent
     }
     private bool SpendMoney()
     {
-        if (ShopUtils.Money >= 500)
+        if (ShopUtils.CanAfford(100))
         {
-            ShopUtils.Buy(100, null);
+            ShopUtils.Buy(100);
             HumanResourcesUtils.IncreaseHumanResources();
             HumanResourcesUtils.IncreaseChaos(-0.05f);
             return true;

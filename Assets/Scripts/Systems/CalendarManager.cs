@@ -3,10 +3,10 @@
 public class CalendarManager : MonoBehaviour
 {
     [SerializeField]
-    private Calendar.Day[] days;
+    private Calendar.Month[] months;
     private void Awake()
     {
-        Calendar.days = days;
+        Calendar.months = months;
     }
     private void Update()
     {

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using LastBastion.Waves;
 public class Stats : MonoBehaviour, IDamagable
 {
     [SerializeField]
@@ -34,19 +35,25 @@ public class Stats : MonoBehaviour, IDamagable
     {
         if(health <= 0)
         {
-            if (CompareTag("Enemy"))
-            {
-                if (lastDamager != null && lastDamager.CompareTag("Player"))
-                {
-                    ShopUtils.GainMoney(100);
-                }
-                TimerUtils.AddTimer(0.02f, WavesUtils.CheckRemainings);
-            }
-            GetComponent<IUnsub>().UnsubAll();
-            gameObject.SetActive(false);
+            Death();
 
         }
     }
+
+    private void Death()
+    {
+        if (CompareTag("Enemy"))
+        {
+            if (lastDamager != null && lastDamager.CompareTag("Player"))
+            {
+                ShopUtils.GainMoney(100);
+            }
+            TimerUtils.AddTimer(0.02f, WavesUtils.CheckRemainings);
+        }
+        GetComponent<IUnsub>().UnsubAll();
+        Destroy(gameObject);
+    }
+
     private void Start()
     {
         isUnit = CompareTag("Player");

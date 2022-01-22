@@ -2,9 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Pathfinding;
+using LastBastion.Waves;
 [RequireComponent(typeof(Stats))]
 public class AIBase : MonoBehaviour, IUnsub
 {
+    public static event System.Action OnEnemyDeath;
+    [SerializeField] private AudioClip acidDamage;
     private Vector2 moveDirection;
     private Stats stats;
     private Seeker seeker;
@@ -32,6 +35,7 @@ public class AIBase : MonoBehaviour, IUnsub
 
     private void WeatherUtils_OnAcidRain(float value)
     {
+        SoundManager.PlaySound(acidDamage, transform.position);
         stats.Damage(value, null);
     }
 
@@ -142,6 +146,7 @@ public class AIBase : MonoBehaviour, IUnsub
     {
         WeatherUtils.OnAcidRain -= WeatherUtils_OnAcidRain;
         Calendar.OnWinter_Property -= Calendar_OnWinter;
+        OnEnemyDeath?.Invoke();
     }
 }
 

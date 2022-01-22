@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.U2D;
+using UnityEngine.Experimental.Rendering.Universal;
 public class Swipe : MonoBehaviour
 {
     [SerializeField] private float sensitivity;
@@ -28,12 +28,13 @@ public class Swipe : MonoBehaviour
         if (Input.GetMouseButton(0))
         {
             Vector2 delta = MouseDelta;
-            transform.Translate(delta.x / sensitivity, delta.y / sensitivity, 0);
+            transform.Translate(delta.x * sensitivity * Time.deltaTime, delta.y * sensitivity * Time.deltaTime, 0);
         }
         if (!isInCanvas)
         {
-            self.orthographicSize += Input.mouseScrollDelta.y * sensitivity;
+            ppCam.assetsPPU += Mathf.RoundToInt((Input.mouseScrollDelta.y * sensitivity * 2) / 4) * 4;
+            ppCam.assetsPPU = Mathf.Clamp(ppCam.assetsPPU, 8, 256);
         }
-        previousPos = !isInCanvas ? self.ScreenToWorldPoint(Input.mousePosition) : Input.mousePosition;
+        previousPos = Vector2.Lerp(previousPos,!isInCanvas ? self.ScreenToWorldPoint(Input.mousePosition) : Input.mousePosition,0.5f);
     }
 }

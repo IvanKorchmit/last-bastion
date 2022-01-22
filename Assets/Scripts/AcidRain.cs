@@ -2,15 +2,21 @@
 [CreateAssetMenu(fileName = "Acid Rain", menuName = "Events/Weather/Acid Rain")]
 public class AcidRain : GameEvent, IEventEndable
 {
+    public enum AcidRainStatusType
+    {
+        Begin, End
+    }
+    public static event System.Action<AcidRainStatusType> OnAcidRainChange;
     public override void Launch()
     {
-        WavesUtils.LightAnimator.SetBool("isAcid",true);
-        WeatherUtils.status = WeatherUtils.Status.acid_rain;
+        OnAcidRainChange?.Invoke(AcidRainStatusType.Begin);
+        WeatherUtils.status = WeatherUtils.Status.AcidRain;
     }
     public void End()
     {
-        WavesUtils.LightAnimator.SetBool("isAcid",false);
-        WeatherUtils.status = WeatherUtils.Status.none;
+        OnAcidRainChange?.Invoke(AcidRainStatusType.End);
+
+        WeatherUtils.status = WeatherUtils.Status.None;
     }
 }
 

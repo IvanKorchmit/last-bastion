@@ -5,56 +5,30 @@ using TMPro;
 using Pathfinding;
 using System.Linq;
 using UnityEngine.UI;
-using Dialogue;
+using LastBastion.Dialogue;
+using LastBastion.Waves;
 using UnityEngine.EventSystems;
 
 public static class ShopUtils
 {
-    public static UIShow UIPanel_Reference;
-    public static TextMeshProUGUI displayInfo_Reference;
     private static int money = 500;
     public static int Money => money;
     public static void GainMoney(int amount)
     {
         money += amount;
     }
-    public static void Buy(int cost, Good good)
+    public static bool CanAfford(int cost)
     {
-        if (money >= cost)
-        {
-            money -= cost;
-            if (good != null)
-            {
-                Vector2 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-                Vector2 col = GameObject.Find(WavesUtils.COLONY_PATH).transform.position;
-                var obj = MonoBehaviour.Instantiate(good.Prefab, good.MustCome ? col : pos, Quaternion.identity);
-                if (obj.CompareTag("Player"))
-                {
-                    UnitAI uAI = obj.GetComponent<UnitAI>();
-                    obj.GetComponent<Seeker>().StartPath(col, pos, uAI.OnPathCalculated);
-                    uAI.Weapon = good.Weapon;
-                }
-            }
-        }
+        return money >= cost;
     }
-}
-
-public static class Placement
-{
-    public static Good objectToPlace;
-    public static bool canPlace;
-}
-[System.Serializable]
-public class Good
-{
-    [SerializeField] private int cost;
-    [SerializeField] private GameObject prefab;
-    [SerializeField] private WeaponBase weapon;
-    [SerializeField] private bool mustCome;
-    public int Cost => cost;
-    public GameObject Prefab => prefab;
-    public WeaponBase @Weapon => weapon;
-    public bool MustCome => mustCome;
+    public static void Buy(Good good)
+    {
+        money -= good.Cost;
+    }
+    public static void Buy(int cost)
+    {
+        money -= cost;
+    }
 }
 public static class GameUtils
 {
@@ -73,7 +47,9 @@ public static class GameUtils
                         }
                         else
                         {
+#if UNITY_EDITOR
                             UnityEditor.EditorApplication.isPlaying = false;
+#endif
                         }
                         return true;
                         }, null, null)
@@ -99,8 +75,18 @@ public static class GameUtils
         DialogueUtils.Dialogue(endContent);
     }
 }
-namespace Dialogue
+namespace LastBastion.Dialogue
 {
+    public static class DialogueUtils
+    {
+        public delegate void DialogueDelegate(Content content);
+        public static event DialogueDelegate OnDialogueAppeared;
+        public static void Dialogue(Content content)
+        {
+            OnDialogueAppeared?.Invoke(content);
+
+        }
+    }
     public class Content
     {
         public class Choice
@@ -144,104 +130,83 @@ namespace Dialogue
         }
     }
 }
-public static class DialogueUtils
+namespace LastBastion.Waves
 {
-    public static RectTransform dialoguePanelRef;
-    public static GameObject choiceButton;
-    public static void Dialogue(Dialogue.Content content)
+    public static class WavesUtils
     {
-        dialoguePanelRef.gameObject.SetActive(true);
-        TextMeshProUGUI text = dialoguePanelRef.Find("Text").GetComponent<TextMeshProUGUI>();
-        text.text = content.Text;
-        Transform buttons = dialoguePanelRef.Find("Buttons");
-        while (buttons.childCount > 0)
+        public enum DayTime
         {
-            Transform child = buttons.GetChild(0);
-            child.SetParent(null);
-            MonoBehaviour.Destroy(child.gameObject);
+            Day, Night
         }
-        for (int i = 0; i < content.Choices.Length; i++)
+        public static event System.Action<DayTime> OnDayChanged;
+        private const int DeFAULT_TIME = 30;
+        public const string TS_PATH = "TechnicalStuff";
+        public const string COLONY_PATH = TS_PATH + "/Colony";
+        private static int waveNumber = 1;
+        private static int timeRemaining = DeFAULT_TIME;
+        private static bool areIncoming = false;
+        public static bool AreIncoming => areIncoming;
+
+        public static void SetIncoming()
         {
-            Button b = MonoBehaviour.Instantiate(choiceButton, buttons).GetComponent<Button>();
-            b.onClick.AddListener(content.Choices[i].OnChoice);
-            b.transform.Find("Text").GetComponent<TextMeshProUGUI>().text = content.Choices[i].Text;
+            areIncoming = true;
         }
-        
-    }
-    public static void CloseDIalogue()
-    {
-        dialoguePanelRef.gameObject.SetActive(false);
-    }
-}
 
-public static class WavesUtils
-{
-    private const int DeFAULT_TIME = 30;
-    public const string TS_PATH = "TechnicalStuff";
-    public const string COLONY_PATH = TS_PATH + "/Colony";
-    private static int waveNumber = 1;
-    private static int timeRemaining = DeFAULT_TIME;
-    private static bool areIncoming = false;
-    public static bool AreIncoming => areIncoming;
-
-    public static void SetIncoming()
-    {
-        areIncoming = true;
-    }
-
-    private static Animator lightAnimator;
-    public static int WaveNumber => waveNumber;
-    public static Animator LightAnimator => lightAnimator;
-    static WavesUtils()
-    {
-        lightAnimator = GameObject.Find($"{TS_PATH}/Light").GetComponent<Animator>();
-    }
-    public static void DecrementTime()
-    {
-        timeRemaining--;
-    }
-    public static int TimeRemaining => timeRemaining;
-    public static void CheckRemainings()
-    {
-        if(GameObject.FindGameObjectsWithTag("Enemy").Length <= 0)
+        public static int WaveNumber => waveNumber;
+        public static void DecrementTime()
         {
-            lightAnimator.SetBool("isDay", true);
-            areIncoming = false;
-            timeRemaining = DeFAULT_TIME;
-            waveNumber++;
-            Calendar.CalculateResources();
+            timeRemaining--;
         }
-    }
-    public static WaveProps FindWave(WaveProps[] waves)
-    {
-        WaveProps temp = default(WaveProps);
-        lightAnimator.SetBool("isDay", false);
-        foreach (WaveProps w in waves)
+        public static int TimeRemaining => timeRemaining;
+        public static void CheckRemainings()
         {
-            if (w.WaveNumber <= waveNumber)
+            if (GameObject.FindGameObjectsWithTag("Enemy").Length <= 0)
             {
-                temp = w;
+                OnDayChanged?.Invoke(DayTime.Day);
+                areIncoming = false;
+                timeRemaining = DeFAULT_TIME;
+                waveNumber++;
             }
         }
-        return temp;
-    }
-    
-}
+        public static WaveProps FindWave(WaveProps[] waves)
+        {
+            WaveProps temp = default(WaveProps);
+            OnDayChanged?.Invoke(DayTime.Night);
+            foreach (WaveProps w in waves)
+            {
+                if (w.WaveNumber <= waveNumber)
+                {
+                    temp = w;
+                }
+            }
+            return temp;
+        }
 
-[System.Serializable]
-public class WaveProps
-{
-    [SerializeField] private int waveNumber;
-    [SerializeField] private GameObject[] waveEnemies;
-    [SerializeField] private bool isBossWave;
-    public int WaveNumber => waveNumber;
-    public GameObject[] WaveEnemies => waveEnemies;
+    }
+
+    [System.Serializable]
+    public class WaveProps
+    {
+        [SerializeField] private int waveNumber;
+        [SerializeField] private GameObject[] waveEnemies;
+        [SerializeField] private bool isBossWave;
+        public int WaveNumber => waveNumber;
+        public GameObject[] WaveEnemies => waveEnemies;
+    }
 }
 public static class Calendar
 {
+    [System.Serializable]
+    public struct Month
+    {
+        public string name;
+        public Day[] days;
+    }
     private static Animator cameraAnimatorReference = Camera.main.GetComponent<Animator>();
-    public static Day[] days;
+    public static Month[] months;
     public delegate void WinterDelegate(bool isWinter);
+    public delegate void FogDelegate(bool isFog);
+    public static event FogDelegate OnFog;
     private static event WinterDelegate OnWinter;
     public static event WinterDelegate OnWinter_Property 
     {
@@ -259,10 +224,27 @@ public static class Calendar
     [System.Serializable]
     public struct Day
     {
-        public bool isWinter;
+        public enum WeatherType
+        {
+            None, Winter, Fog
+        }
+        public WeatherType weather;
         public GameEvent gameEvent;
         public int number;
     }
+    static Calendar()
+    {
+        WavesUtils.OnDayChanged += WavesUtils_OnDayChanged;
+    }
+
+    private static void WavesUtils_OnDayChanged(WavesUtils.DayTime obj)
+    {
+        if (obj == WavesUtils.DayTime.Day)
+        {
+            CalculateResources();
+        }
+    }
+
     public static Animator CameraAnimatorReference => cameraAnimatorReference;
     public static void Update()
     {
@@ -279,23 +261,51 @@ public static class Calendar
     public static bool IsWinter(bool doApply)
     {
         bool isWinter = false;
-        for (int i = days.Length - 1; i >= 0; i--)
+        foreach (var month in months)
         {
-            Day day = days[i];
-            if (WavesUtils.WaveNumber >= day.number)
+            Day[] days = month.days;
+            if (days.Last().number < WavesUtils.WaveNumber)
             {
-                if (day.gameEvent != null)
-                {
-                    if (doApply)
-                    {
-                        WeatherUtils.ApplyEvent(day.gameEvent);
-                    }
-                }
-                return day.isWinter;
+                continue;
             }
-            else
+            for (int i = days.Length - 1; i >= 0; i--)
             {
-                isWinter = day.isWinter;
+                Day day = days[i];
+                if (WavesUtils.WaveNumber >= day.number)
+                {
+                    if (day.gameEvent != null)
+                    {
+                        if (doApply)
+                        {
+                            WeatherUtils.ApplyEvent(day.gameEvent);
+                            if (day.weather == Day.WeatherType.Fog)
+                            {
+                                OnFog?.Invoke(true);
+                            }
+                            else
+                            {
+                                OnFog?.Invoke(false);
+                            }
+                        }
+                    }
+                    else if (doApply)
+                    {
+                        WeatherUtils.ApplyEvent(null);
+                        if (day.weather == Day.WeatherType.Fog)
+                        {
+                            OnFog?.Invoke(true);
+                        }
+                        else
+                        {
+                            OnFog?.Invoke(false);
+                        }
+                    }
+                    return day.weather == Day.WeatherType.Winter;
+                }
+                else
+                {
+                    isWinter = day.weather == Day.WeatherType.Winter;
+                }
             }
         }
         return isWinter;
@@ -305,7 +315,7 @@ public static class Calendar
 public static class HumanResourcesUtils
 {
     private static float chaos = 0f;
-    private static int humanResources = 5;
+    private static int humanResources = 15;
 
     public static int HumanResources => humanResources;
     public static float Chaos => chaos;
@@ -348,7 +358,7 @@ public static class WeatherUtils
     public static event DamagableDel OnAcidRain;
     public enum Status
     {
-        none, acid_rain, meteor_rain
+        None, AcidRain, MeteorRain
     }
     public static Status status;
     public static void Update()
@@ -357,15 +367,18 @@ public static class WeatherUtils
         {
             switch (status)
             {
-                case Status.none:
+                case Status.None:
                     break;
-                case Status.acid_rain:
+                case Status.AcidRain:
                     {
                         OnAcidRain?.Invoke(Random.Range(2f, 4f));
                     }
                     break;
-                case Status.meteor_rain:
-                    GameObject.Instantiate((currentEvent as MeteorRain).MeteorPrefab, SpawnerManager.PositionInside(area), Quaternion.identity);
+                case Status.MeteorRain:
+                    if (Random.value >= 0.7f)
+                    {
+                        GameObject.Instantiate((currentEvent as MeteorRain).MeteorPrefab, SpawnerManager.PositionInside(area), Quaternion.identity);
+                    }
                     break;
             }
         }
@@ -377,14 +390,14 @@ public static class WeatherUtils
             ev.End();
         }
         currentEvent = e;
-        currentEvent.Launch();
+        currentEvent?.Launch();
     }
 }
 public class InputInfo
 {
     public enum CommandType
     {
-        Move, Deselect
+        Move, Deselect, Follow
     }
     private CommandType command;
     private Vector2 position;

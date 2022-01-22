@@ -1,20 +1,46 @@
 ﻿using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
+using Pathfinding;
+using LastBastion.Waves;
 public class Place : MonoBehaviour
 {
+    public static event System.Action OnPlacecd;
+    private static Good goodToPlace;
+    private void Start()
+    {
+        Shop_BuyButton.OnGoodSelection += Shop_BuyButton_OnGoodSelection;
+    }
+
+    private void Shop_BuyButton_OnGoodSelection(PurchaseInfo info)
+    {
+        if (info.GoodStatus == PurchaseInfo.GoodOperation.Fail) return;
+        goodToPlace = info.Good;
+    }
+
     private void OnGUI()
     {
-        if (!EventSystem.current.IsPointerOverGameObject() && Event.current.clickCount >= 2)
+        if (Event.current.isMouse && Event.current.clickCount == 2)
         {
-            if (Placement.objectToPlace != null)
+            if (goodToPlace != null)
             {
-                if (!Placement.objectToPlace.MustCome || HumanResourcesUtils.TakeOne())
+                Vector2 mouse = Input.mousePosition;
+
+                Vector2 pos = Camera.main.ScreenToWorldPoint(mouse);
+                var entity = Instantiate(goodToPlace.Prefab, goodToPlace.IsUnit ? GameObject.Find(WavesUtils.COLONY_PATH).transform.position : (Vector3)pos, Quaternion.identity);
+                
+                // Checking if the current good a living Unit?
+                if (goodToPlace.IsUnit)
                 {
-                    ShopUtils.Buy(Placement.objectToPlace.Cost, Placement.objectToPlace);
-                    Placement.objectToPlace = null;
-                    TimerUtils.AddTimer(0.02f, () => ShopUtils.UIPanel_Reference.shopWindow.gameObject.SetActive(true));
+                    entity.GetComponent<UnitAI>().Initialize(pos);
+                    HumanResourcesUtils.TakeOne();
+                    entity.GetComponent<UnitAI>().Weapon = goodToPlace.Weapon;
+
+
                 }
+                ShopUtils.Buy(goodToPlace);
+                goodToPlace = null;
+                OnPlacecd?.Invoke();
             }
         }
     }
