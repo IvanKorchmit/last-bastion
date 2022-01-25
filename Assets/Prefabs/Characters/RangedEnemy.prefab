@@ -377,6 +377,7 @@ MonoBehaviour:
   rangedDamage: 10
   healthBar: {fileID: 0}
   armorBar: {fileID: 0}
+  costOnKill: 75
 --- !u!114 &8756620602860579868
 MonoBehaviour:
   m_ObjectHideFlags: 0

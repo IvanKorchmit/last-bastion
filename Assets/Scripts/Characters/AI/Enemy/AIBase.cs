@@ -6,6 +6,8 @@ using LastBastion.Waves;
 [RequireComponent(typeof(Stats))]
 public class AIBase : MonoBehaviour, IUnsub
 {
+    public const float WINTER_SLOWDOWN = 1.5f;
+    public static event System.Action OnEnemySpawn;
     public static event System.Action OnEnemyDeath;
     [SerializeField] private AudioClip acidDamage;
     private Vector2 moveDirection;
@@ -17,6 +19,8 @@ public class AIBase : MonoBehaviour, IUnsub
     private float initSpeed;
     [SerializeField] private bool isAttacking;
     protected IDamagable target;
+    public const float BLOOD_MOON_MULT = 3f;
+    private bool isBlizzard;
     protected virtual void Start()
     {
         initSpeed = speed;
@@ -25,12 +29,34 @@ public class AIBase : MonoBehaviour, IUnsub
         range = GetComponentInChildren<RangeFinder>();
         WeatherUtils.OnAcidRain += WeatherUtils_OnAcidRain;
         Calendar.OnWinter_Property += Calendar_OnWinter;
+        BloodMoon.OnBloodMoonChange += BloodMoon_OnBloodMoonChange;
+        Blizzard.OnBlizzard += Blizzard_OnBlizzard;
+        OnEnemySpawn?.Invoke();
 
+    }
+
+    private void Blizzard_OnBlizzard(bool obj)
+    {
+        isBlizzard = obj;
+    }
+
+    private void BloodMoon_OnBloodMoonChange(BloodMoon.BloodMoonStatus obj)
+    {
+        if (obj == BloodMoon.BloodMoonStatus.Begin)
+        {
+            speed = initSpeed * BLOOD_MOON_MULT;
+            stats.IncreaseMeleeDamage(BLOOD_MOON_MULT);
+        }
+        else
+        {
+            speed = initSpeed;
+            stats.IncreaseMeleeDamage(1);
+        }
     }
 
     private void Calendar_OnWinter(bool isWinter)
     {
-        speed = isWinter ? initSpeed / 3 : initSpeed;
+        speed = isWinter ? initSpeed / (WINTER_SLOWDOWN * (!isBlizzard ? 1f : 2f)) : initSpeed;
     }
 
     private void WeatherUtils_OnAcidRain(float value)
@@ -146,6 +172,8 @@ public class AIBase : MonoBehaviour, IUnsub
     {
         WeatherUtils.OnAcidRain -= WeatherUtils_OnAcidRain;
         Calendar.OnWinter_Property -= Calendar_OnWinter;
+        BloodMoon.OnBloodMoonChange -= BloodMoon_OnBloodMoonChange;
+        Blizzard.OnBlizzard -= Blizzard_OnBlizzard;
         OnEnemyDeath?.Invoke();
     }
 }
@@ -154,5 +182,6 @@ public interface IDamagable
 {
     void Damage(float d, GameObject owner);
     float Health { get; }
+    float MaxHealth { get; }
     Transform transform { get; }
 }   

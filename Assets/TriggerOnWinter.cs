@@ -5,8 +5,9 @@ using UnityEngine;
 public class TriggerOnWinter : MonoBehaviour
 {
     private Animator animator;
-    private bool isCurrentlyWinter;
-    private bool isCurrentlyFog;
+    private static bool isCurrentlyWinter;
+    private static bool isCurrentlyFog;
+    private static bool isCurrentlyBlizzard;
     private AudioSource blizzard;
     [SerializeField] private bool isFog;
     void Start()
@@ -15,6 +16,7 @@ public class TriggerOnWinter : MonoBehaviour
         if (!isFog)
         {
             Calendar.OnWinter_Property += Calendar_OnWinter;
+            Blizzard.OnBlizzard += Blizzard_OnBlizzard;
             if (CompareTag("MainCamera"))
             {
                 blizzard = GetComponent<AudioSource>();
@@ -24,6 +26,11 @@ public class TriggerOnWinter : MonoBehaviour
         {
             Calendar.OnFog += Calendar_OnFog;
         }
+    }
+
+    private void Blizzard_OnBlizzard(bool obj)
+    {
+        isCurrentlyBlizzard = obj;
     }
 
     private void Calendar_OnFog(bool isFog)
@@ -47,7 +54,7 @@ public class TriggerOnWinter : MonoBehaviour
     {
         if (blizzard != null)
         {
-            if (isCurrentlyWinter && blizzard.volume < 1f)
+            if ((isCurrentlyBlizzard || isCurrentlyWinter) && blizzard.volume < 1f)
             {
                 blizzard.volume += Time.deltaTime;
             }

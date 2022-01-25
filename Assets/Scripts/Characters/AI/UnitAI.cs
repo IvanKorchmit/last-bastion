@@ -18,6 +18,7 @@ public class UnitAI : MonoBehaviour, ISelectable, IUnsub
     protected Vector2 moveDirection;
     [SerializeField] private Image hpBar;
     private bool isFollowing;
+    private static bool isBlizzard;
     public WeaponBase @Weapon
     {
         get
@@ -102,6 +103,12 @@ public class UnitAI : MonoBehaviour, ISelectable, IUnsub
         Calendar.OnWinter_Property += Calendar_OnWinter;
         WeatherUtils.OnAcidRain += WeatherUtils_OnAcidRain;
         AIBase.OnEnemyDeath += AIBase_OnEnemyDeath;
+        Blizzard.OnBlizzard += Blizzard_OnBlizzard;
+    }
+
+    private void Blizzard_OnBlizzard(bool obj)
+    {
+        isBlizzard = obj;
     }
 
     private void AIBase_OnEnemyDeath()
@@ -122,7 +129,7 @@ public class UnitAI : MonoBehaviour, ISelectable, IUnsub
 
     private void Calendar_OnWinter(bool isWinter)
     {
-        speed = isWinter ? initSpeed / 3 : initSpeed;
+        speed = isWinter ? initSpeed / (AIBase.WINTER_SLOWDOWN * (isBlizzard ? 2f : 1f)) : initSpeed;
     }
 
     protected virtual void Update()
@@ -138,7 +145,7 @@ public class UnitAI : MonoBehaviour, ISelectable, IUnsub
             {
                 isAttacking = true;
                 moveDirection = new Vector2();
-                TimerUtils.AddTimer(f.Cooldown, Attack);
+                TimerUtils.AddTimer(f.Cooldown / f.SpeedDivision, Attack);
             }
             else
             {
@@ -228,6 +235,7 @@ public class UnitAI : MonoBehaviour, ISelectable, IUnsub
         Calendar.OnWinter_Property -= Calendar_OnWinter;
         WeatherUtils.OnAcidRain -= WeatherUtils_OnAcidRain;
         AIBase.OnEnemyDeath -= AIBase_OnEnemyDeath;
+        Blizzard.OnBlizzard -= Blizzard_OnBlizzard;
     }
 }
 

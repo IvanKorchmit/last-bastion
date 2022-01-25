@@ -12,6 +12,7 @@ public class AcidRain : GameEvent, IEventEndable
         OnAcidRainChange?.Invoke(AcidRainStatusType.Begin);
         WeatherUtils.status = WeatherUtils.Status.AcidRain;
     }
+
     public void End()
     {
         OnAcidRainChange?.Invoke(AcidRainStatusType.End);
@@ -19,4 +20,3 @@ public class AcidRain : GameEvent, IEventEndable
         WeatherUtils.status = WeatherUtils.Status.None;
     }
 }
-

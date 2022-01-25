@@ -2,6 +2,7 @@
 using LastBastion.Waves;
 public class SpawnerManager : MonoBehaviour
 {
+    public static event System.Action<IDamagable[]> OnBossSpawned;
     private BoxCollider2D square;
     [SerializeField] private WaveProps[] waves;
     private void Start()
@@ -10,15 +11,28 @@ public class SpawnerManager : MonoBehaviour
     }
     public void Spawn()
     {
-        GameObject[] enemies = WavesUtils.FindWave(waves).WaveEnemies;
-        int w = WavesUtils.WaveNumber;
-        int quantity = Mathf.RoundToInt(((float)w * 1.01f) * 2f);
-        WavesUtils.SetIncoming();
-        for (int i = 0; i < quantity; i++)
+        WaveProps wave = WavesUtils.FindWave(waves);
+        if (!wave.IsBoss)
         {
-            Instantiate(enemies[Random.Range(0, enemies.Length)], PositionInside(square), Quaternion.identity);
+            GameObject[] enemies = wave.WaveEnemies;
+            int w = WavesUtils.WaveNumber;
+            int quantity = Mathf.RoundToInt(((float)w * 1.01f) * 2f);
+            for (int i = 0; i < quantity; i++)
+            {
+                Instantiate(enemies[Random.Range(0, enemies.Length)], PositionInside(square), Quaternion.identity);
+            }
         }
+        else
+        {
+            IDamagable[] damagables = new IDamagable[wave.Bosses.Length];
+            for (int i = 0; i < wave.Bosses.Length; i++)
+            {
+                damagables[i] = Instantiate(wave.Bosses[i], PositionInside(square), Quaternion.identity).GetComponent<IDamagable>();
+            }
 
+            OnBossSpawned?.Invoke(damagables);
+        }
+        WavesUtils.SetIncoming();
     }
     public static Vector2 PositionInside(BoxCollider2D square)
     {

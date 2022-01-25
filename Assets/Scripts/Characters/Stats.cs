@@ -11,6 +11,7 @@ public class Stats : MonoBehaviour, IDamagable
     private float armor;
     [SerializeField]
     private float meleeDamage;
+    private float initMeleeDamage;
     [SerializeField]
     private float rangedDamage;
     [SerializeField]
@@ -18,14 +19,16 @@ public class Stats : MonoBehaviour, IDamagable
     [SerializeField]
     private Image armorBar;
     private bool isUnit;
-    private float healthMax;
+    private float maxHealth;
     private float armorMax = 10f;
     private GameObject lastDamager;
     public float Health => health;
     public float Armor => armor;
     public float MeleeDamage => meleeDamage;
     public float RangedDamage => rangedDamage;
-    public float HealthMax => healthMax;
+    public float MaxHealth => maxHealth;
+    [SerializeField]
+    private int costOnKill;
     public void Damage(float d, GameObject owner)
     {
         health -= d;
@@ -39,14 +42,17 @@ public class Stats : MonoBehaviour, IDamagable
 
         }
     }
-
+    public void IncreaseMeleeDamage(float value)
+    {
+        meleeDamage = initMeleeDamage * value;
+    }
     private void Death()
     {
         if (CompareTag("Enemy"))
         {
             if (lastDamager != null && lastDamager.CompareTag("Player"))
             {
-                ShopUtils.GainMoney(100);
+                ShopUtils.GainMoney(costOnKill);
             }
             TimerUtils.AddTimer(0.02f, WavesUtils.CheckRemainings);
         }
@@ -56,8 +62,9 @@ public class Stats : MonoBehaviour, IDamagable
 
     private void Start()
     {
+        initMeleeDamage = meleeDamage;
         isUnit = CompareTag("Player");
-        healthMax = health;
+        maxHealth = health;
     }
     private void Update()
     {
@@ -67,7 +74,7 @@ public class Stats : MonoBehaviour, IDamagable
     {
         if (isUnit)
         {
-            healthBar.fillAmount = health / healthMax;
+            healthBar.fillAmount = health / maxHealth;
             armorBar.fillAmount = armor / armorMax;
         }
     }

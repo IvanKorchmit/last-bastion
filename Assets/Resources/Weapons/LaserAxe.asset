@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3df353e2f28ee864895d6fb1d66bec56, type: 3}
   m_Name: LaserAxe
   m_EditorClassIdentifier: 
-  meleeDamage: 4
+  meleeDamage: 2
   range: 2
-  cooldown: 0.38
+  cooldown: 0.7
   damageSound: {fileID: 8300000, guid: 918c1efc154cda049aadeac6f9afd75a, type: 3}

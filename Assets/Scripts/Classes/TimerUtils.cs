@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using System.Linq;
 public class TimerUtils : MonoBehaviour
 {
     private class Timer
@@ -10,9 +10,9 @@ public class TimerUtils : MonoBehaviour
         private Action callback;
         private float timer;
         private float initTimer;
-        public bool isSame(Action callback, float t)
+        public bool isSame(Action callback, float t, bool checkTimer = true)
         {
-            return this.callback.Equals(callback) && initTimer == t;
+            return this.callback.Equals(callback) && (initTimer == t || (checkTimer ? initTimer == t : true));
         }
         public float InitialTimer => initTimer;
         public Timer(float t, Action callback)
@@ -85,5 +85,9 @@ public class TimerUtils : MonoBehaviour
     {
         int ind = TimerUtils.timer.IndexOf(timer);
         TimerUtils.timer[ind] = null;
+    }
+    public static void Cancel(Action action)
+    {
+        timer.RemoveAll((m) => m.isSame(action, 0, false));
     }
 }

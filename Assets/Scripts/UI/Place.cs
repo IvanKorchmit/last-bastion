@@ -27,6 +27,7 @@ public class Place : MonoBehaviour
                 Vector2 mouse = Input.mousePosition;
 
                 Vector2 pos = Camera.main.ScreenToWorldPoint(mouse);
+                pos = Vector2Int.FloorToInt(pos);
                 var entity = Instantiate(goodToPlace.Prefab, goodToPlace.IsUnit ? GameObject.Find(WavesUtils.COLONY_PATH).transform.position : (Vector3)pos, Quaternion.identity);
                 
                 // Checking if the current good a living Unit?

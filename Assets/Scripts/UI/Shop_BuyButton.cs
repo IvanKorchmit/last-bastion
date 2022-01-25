@@ -1,16 +1,24 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.UI;
 public class Shop_BuyButton : MonoBehaviour
 {
     public delegate void BuyDelegate(PurchaseInfo info);
     public static event BuyDelegate OnGoodSelection;
     [SerializeField] private Good good;
+    [SerializeField] private float cooldown;
+    private Button button;
+    private void Start()
+    {
+        button = GetComponent<Button>();
+    }
     public void OnClick()
     {
         if (ShopUtils.CanAfford(good.Cost))
         {
+            TimerUtils.AddTimer(cooldown, () => button.interactable = true);
+            button.interactable = false;
             if (good.IsUnit && HumanResourcesUtils.HumanResources == 0)
             {
                 OnGoodSelection?.Invoke(new PurchaseInfo(PurchaseInfo._GoodType.Entity, PurchaseInfo.GoodOperation.Fail, null));
@@ -18,9 +26,12 @@ public class Shop_BuyButton : MonoBehaviour
             }
             OnGoodSelection?.Invoke(new PurchaseInfo(good.IsUnit ? PurchaseInfo._GoodType.Unit
                 : PurchaseInfo._GoodType.Entity, PurchaseInfo.GoodOperation.Success, good));
+
+
         }
         else
         {
+            
             OnGoodSelection?.Invoke(new PurchaseInfo(PurchaseInfo._GoodType.Entity, PurchaseInfo.GoodOperation.Fail, null));
         }
     }

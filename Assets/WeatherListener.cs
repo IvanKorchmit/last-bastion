@@ -18,6 +18,7 @@ public class WeatherListener : MonoBehaviour
         if (ps == null)
         {
             WavesUtils.OnDayChanged += WavesUtils_OnDayChanged;
+            BloodMoon.OnBloodMoonChange += BloodMoon_OnBloodMoonChange;
         }
         else
         {
@@ -26,12 +27,17 @@ public class WeatherListener : MonoBehaviour
         }
         if (CompareTag("SnowParticle"))
         {
-            Calendar.OnWinter_Property += Calendar_OnWinter_Property;
+            Blizzard.OnBlizzard += Blizzard_OnBlizzard;
         }
         
     }
 
-    private void Calendar_OnWinter_Property(bool isWinter)
+    private void BloodMoon_OnBloodMoonChange(BloodMoon.BloodMoonStatus info)
+    {
+        animator.SetBool("isBloodMoon", info == BloodMoon.BloodMoonStatus.Begin);
+    }
+
+    private void Blizzard_OnBlizzard(bool isWinter)
     {
         if (isWinter)
         {
@@ -57,14 +63,17 @@ public class WeatherListener : MonoBehaviour
         }
         else
         {
-            switch (info)
+            if (!CompareTag("SnowParticle"))
             {
-                case AcidRain.AcidRainStatusType.Begin:
-                    ps.Play();
-                    break;
-                case AcidRain.AcidRainStatusType.End:
-                    ps.Stop();
-                    break;
+                switch (info)
+                {
+                    case AcidRain.AcidRainStatusType.Begin:
+                        ps.Play();
+                        break;
+                    case AcidRain.AcidRainStatusType.End:
+                        ps.Stop();
+                        break;
+                }
             }
         }
     }

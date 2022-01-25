@@ -11,7 +11,7 @@ using UnityEngine.EventSystems;
 
 public static class ShopUtils
 {
-    private static int money = 500;
+    private static int money = 10000;
     public static int Money => money;
     public static void GainMoney(int amount)
     {
@@ -190,8 +190,11 @@ namespace LastBastion.Waves
         [SerializeField] private int waveNumber;
         [SerializeField] private GameObject[] waveEnemies;
         [SerializeField] private bool isBossWave;
+        [SerializeField] private GameObject[] bosses;
         public int WaveNumber => waveNumber;
         public GameObject[] WaveEnemies => waveEnemies;
+        public bool IsBoss => isBossWave;
+        public GameObject[] Bosses => bosses;
     }
 }
 public static class Calendar
