@@ -12,3 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 89e8d890b6923844587568bcbc5089dc, type: 3}
   m_Name: Blood Moon
   m_EditorClassIdentifier: 
+  name: Blood Moon

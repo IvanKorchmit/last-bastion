@@ -54,7 +54,7 @@ public class Stats : MonoBehaviour, IDamagable
             {
                 ShopUtils.GainMoney(costOnKill);
             }
-            TimerUtils.AddTimer(0.02f, WavesUtils.CheckRemainings);
+            TimerUtils.AddTimer(0.02f, () => WavesUtils.CheckRemainings());
         }
         GetComponent<IUnsub>().UnsubAll();
         Destroy(gameObject);

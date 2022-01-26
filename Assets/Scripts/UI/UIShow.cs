@@ -5,8 +5,12 @@ using TMPro;
 using UnityEngine.UI;
 using LastBastion.Dialogue;
 using LastBastion.Waves;
+using System.Linq;
+using UnityEngine.Events;
 public class UIShow : MonoBehaviour
 {
+    public UnityEvent onNight;
+    public UnityEvent onDay;
     private static event System.Action OnDialogueClose;
     public TextMeshProUGUI lowerPanelDisplayInfo;
     public TextMeshProUGUI mainMoneyText;
@@ -19,6 +23,8 @@ public class UIShow : MonoBehaviour
     public GameObject bossHealthPrefab;
     public Transform bossHealthTransformPanel;
     public Image chaosBar;
+    public GameObject weatherInfoPrefab;
+    public Transform weatherContents;
     private void Start()
     {
         DialogueUtils.OnDialogueAppeared += DialogueUtils_OnDialogueAppeared;
@@ -27,6 +33,10 @@ public class UIShow : MonoBehaviour
         OnDialogueClose += UIShow_OnDialogueClose;
         SpawnerManager.OnBossSpawned += SpawnerManager_OnBossSpawned;
         WavesUtils.OnDayChanged += WavesUtils_OnDayChanged;
+        if (WavesUtils.WaveNumber == 1)
+        {
+            SkipCooldown();
+        }
     }
 
     private void WavesUtils_OnDayChanged(WavesUtils.DayTime obj)
@@ -34,15 +44,44 @@ public class UIShow : MonoBehaviour
         if (obj == WavesUtils.DayTime.Day)
         {
             researchCanvas.gameObject.SetActive(true);
+            ShowWeather();
             while (bossHealthTransformPanel.childCount > 0)
             {
                 GameObject temp = bossHealthTransformPanel.GetChild(0).gameObject;
                 temp.transform.SetParent(null);
                 Destroy(temp);
             }
+            onDay?.Invoke();
+        }
+        else
+        {
+            onNight?.Invoke();
+            researchCanvas.gameObject.SetActive(false);
         }
     }
+    private void ShowWeather()
+    {
+        while (weatherContents.childCount > 0)
+        {
+            GameObject temp = bossHealthTransformPanel.GetChild(0).gameObject;
+            temp.transform.SetParent(null);
+            Destroy(temp);
+        }
+        foreach (Calendar.Month month in Calendar.months)
+        {
+            Calendar.Day[] days = month.days;
+            if (days.Last().number < WavesUtils.WaveNumber)
+            {
+                continue;
+            }
 
+            for (int i = WavesUtils.WaveNumber,j = 0; i + j < month.days.Length && j < 5; i++,j++)
+            {
+                Instantiate(weatherInfoPrefab, weatherContents).GetComponent<WeatherInfo>().Init(i + j);
+
+            }
+        }
+    }
     private void SpawnerManager_OnBossSpawned(IDamagable[] obj)
     {
         while (bossHealthTransformPanel.childCount > 0)

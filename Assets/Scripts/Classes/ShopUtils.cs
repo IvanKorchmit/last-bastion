@@ -134,6 +134,9 @@ namespace LastBastion.Waves
 {
     public static class WavesUtils
     {
+        static WavesUtils()
+        {
+        }
         public enum DayTime
         {
             Day, Night
@@ -162,10 +165,10 @@ namespace LastBastion.Waves
         {
             if (GameObject.FindGameObjectsWithTag("Enemy").Length <= 0)
             {
-                OnDayChanged?.Invoke(DayTime.Day);
                 areIncoming = false;
                 timeRemaining = DeFAULT_TIME;
                 waveNumber++;
+                OnDayChanged?.Invoke(DayTime.Day);
             }
         }
         public static WaveProps FindWave(WaveProps[] waves)
@@ -179,11 +182,11 @@ namespace LastBastion.Waves
                     temp = w;
                 }
             }
+            Debug.Log(temp);
             return temp;
         }
 
     }
-
     [System.Serializable]
     public class WaveProps
     {
@@ -264,12 +267,17 @@ public static class Calendar
     public static bool IsWinter(bool doApply)
     {
         bool isWinter = false;
-        foreach (var month in months)
+        foreach (Month month in months)
         {
             Day[] days = month.days;
             if (days.Last().number < WavesUtils.WaveNumber)
             {
                 continue;
+            }
+            if (days.Last().number < WavesUtils.WaveNumber)
+            {
+                GameUtils.EndGame(GameUtils.GameOverReason.DemoOver);
+                return isWinter;
             }
             for (int i = days.Length - 1; i >= 0; i--)
             {

@@ -32,18 +32,19 @@ public class LandMine : MonoBehaviour, IDamagable
         {
             if (r.collider != null)
             {
-                if (r.collider.TryGetComponent(out IDamagable damagable))
+                if (r.collider.CompareTag("Enemy"))
                 {
-                    damagable.Damage(40, gameObject);
+                    if (r.collider.TryGetComponent(out IDamagable damagable))
+                    {
+                        damagable.Damage(40, gameObject);
+                    }
                 }
             }
         }
-        ParticleSystem ps = transform.GetChild(0).GetComponent<ParticleSystem>();
-        ps.Stop();
-        ps.transform.SetParent(null);
         Instantiate(explosionParticle, transform.position, Quaternion.identity);
         SoundManager.PlaySound(explosionSound, transform.position);
         Destroy(gameObject);
+
     }
 
     public void Damage(float d, GameObject owner)

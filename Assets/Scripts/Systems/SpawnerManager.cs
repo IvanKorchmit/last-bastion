@@ -55,6 +55,7 @@ public class SpawnerManager : MonoBehaviour
             }
             else if (WavesUtils.AreIncoming)
             {
+                WavesUtils.CheckRemainings();
                 return;
             }
             else

@@ -12,3 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 691886dc93b01814f8e959f0f83a0423, type: 3}
   m_Name: Income
   m_EditorClassIdentifier: 
+  name: Income

@@ -12,4 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2bc3bdcb1ffcd7343aa75cf58e7cbc4b, type: 3}
   m_Name: Meteor Rain
   m_EditorClassIdentifier: 
+  name: Meteor Rain
   meteorPrefab: {fileID: 6979228459543623371, guid: 58ba897eaea20f541b526b1dacfc879f, type: 3}

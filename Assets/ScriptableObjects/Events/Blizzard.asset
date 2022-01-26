@@ -12,3 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e8297a2b99dc2d4ab941e8c056707b4, type: 3}
   m_Name: Blizzard
   m_EditorClassIdentifier: 
+  name: Blizzard
