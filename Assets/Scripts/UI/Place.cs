@@ -5,8 +5,9 @@ using Pathfinding;
 using LastBastion.Waves;
 public class Place : MonoBehaviour
 {
-    public static event System.Action OnPlacecd;
+    public static event System.Action<PurchaseInfo> OnPlacecd;
     private static Good goodToPlace;
+    private static PurchaseInfo lastPurchase;
     private void Start()
     {
         Shop_BuyButton.OnGoodSelection += Shop_BuyButton_OnGoodSelection;
@@ -16,6 +17,7 @@ public class Place : MonoBehaviour
     {
         if (info.GoodStatus == PurchaseInfo.GoodOperation.Fail) return;
         goodToPlace = info.Good;
+        lastPurchase = info;
     }
 
     private void OnGUI()
@@ -41,7 +43,7 @@ public class Place : MonoBehaviour
                 }
                 ShopUtils.Buy(goodToPlace);
                 goodToPlace = null;
-                OnPlacecd?.Invoke();
+                OnPlacecd?.Invoke(lastPurchase);
             }
         }
     }

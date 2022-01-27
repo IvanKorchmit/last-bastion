@@ -6,6 +6,7 @@ using UnityEngine.Experimental.Rendering.Universal;
 public class Swipe : MonoBehaviour
 {
     [SerializeField] private float sensitivity;
+    [SerializeField] private float scroll;
     [SerializeField] private bool isInCanvas = false;
     private Camera self;
     private PixelPerfectCamera ppCam;
@@ -23,7 +24,7 @@ public class Swipe : MonoBehaviour
         self = Camera.main;
         ppCam = self.GetComponent<PixelPerfectCamera>();
     }
-    void Update()
+    void Update() 
     {
         if (Input.GetMouseButton(0))
         {
@@ -32,7 +33,7 @@ public class Swipe : MonoBehaviour
         }
         if (!isInCanvas)
         {
-            ppCam.assetsPPU += Mathf.RoundToInt((Input.mouseScrollDelta.y * sensitivity * 2) / 4) * 4;
+            ppCam.assetsPPU += Mathf.RoundToInt((Input.mouseScrollDelta.y * scroll) / 4) * 4;
             ppCam.assetsPPU = Mathf.Clamp(ppCam.assetsPPU, 8, 256);
         }
         previousPos = Vector2.Lerp(previousPos,!isInCanvas ? self.ScreenToWorldPoint(Input.mousePosition) : Input.mousePosition,0.5f);

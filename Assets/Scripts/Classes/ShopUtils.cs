@@ -168,13 +168,14 @@ namespace LastBastion.Waves
                 areIncoming = false;
                 timeRemaining = DeFAULT_TIME;
                 waveNumber++;
+               
                 OnDayChanged?.Invoke(DayTime.Day);
             }
         }
         public static WaveProps FindWave(WaveProps[] waves)
         {
-            WaveProps temp = default(WaveProps);
             OnDayChanged?.Invoke(DayTime.Night);
+            WaveProps temp = default(WaveProps);
             foreach (WaveProps w in waves)
             {
                 if (w.WaveNumber <= waveNumber)
@@ -182,7 +183,6 @@ namespace LastBastion.Waves
                     temp = w;
                 }
             }
-            Debug.Log(temp);
             return temp;
         }
 
@@ -245,6 +245,7 @@ public static class Calendar
 
     private static void WavesUtils_OnDayChanged(WavesUtils.DayTime obj)
     {
+        Debug.Log("Called from Calendar");
         if (obj == WavesUtils.DayTime.Day)
         {
             CalculateResources();

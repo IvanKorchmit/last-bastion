@@ -21,7 +21,8 @@ public class Stats : MonoBehaviour, IDamagable
     private bool isUnit;
     private float maxHealth;
     private float armorMax = 10f;
-    private GameObject lastDamager;
+    private string lastDamager;
+    private GameObject lastDamagerGO;
     public float Health => health;
     public float Armor => armor;
     public float MeleeDamage => meleeDamage;
@@ -29,10 +30,13 @@ public class Stats : MonoBehaviour, IDamagable
     public float MaxHealth => maxHealth;
     [SerializeField]
     private int costOnKill;
+    private bool isOnFire;
+    [SerializeField] ParticleSystem fire;
     public void Damage(float d, GameObject owner)
     {
         health -= d;
-        lastDamager = owner;
+        lastDamager = owner != null ? owner.tag : null;
+        lastDamagerGO = owner;
     }
     private void CheckHealth()
     {
@@ -50,7 +54,7 @@ public class Stats : MonoBehaviour, IDamagable
     {
         if (CompareTag("Enemy"))
         {
-            if (lastDamager != null && lastDamager.CompareTag("Player"))
+            if (lastDamager != null && lastDamager == "Player")
             {
                 ShopUtils.GainMoney(costOnKill);
             }
@@ -65,10 +69,30 @@ public class Stats : MonoBehaviour, IDamagable
         initMeleeDamage = meleeDamage;
         isUnit = CompareTag("Player");
         maxHealth = health;
+        fire.Stop();
+    }
+    public void SetOnFire()
+    {
+        isOnFire = true;
+        TimerUtils.AddTimer(10, RemoveFire);
+        fire.Play();
+    }
+    private void RemoveFire()
+    {
+        isOnFire = false;
+        fire.Stop();
     }
     private void Update()
     {
         CheckHealth();
+        if (isOnFire)
+        {
+            TimerUtils.AddTimer(1, FireDamage);
+        }
+    }
+    private void FireDamage()
+    {
+        Damage(Random.Range(3f, 6f), lastDamagerGO);
     }
     private void OnGUI()
     {

@@ -149,6 +149,10 @@ public class UnitAI : MonoBehaviour, ISelectable, IUnsub
             }
             else
             {
+                if (isAttacking && weapon is IWeaponStoppable stop)
+                {
+                    stop.Stop(shootPoint);
+                }
                 isAttacking = false;
                 MoveAlong();
             }
@@ -173,8 +177,12 @@ public class UnitAI : MonoBehaviour, ISelectable, IUnsub
             {
                 TimerUtils.AddTimer(m.Cooldown, MeleeAttack);
             }
-            else
+            else if (range.ClosestTarget == null)
             {
+                if (isAttacking && weapon is IWeaponStoppable stop)
+                {
+                    stop.Stop(shootPoint);
+                }
                 isAttacking = false;
             }
         }
@@ -236,6 +244,7 @@ public class UnitAI : MonoBehaviour, ISelectable, IUnsub
         WeatherUtils.OnAcidRain -= WeatherUtils_OnAcidRain;
         AIBase.OnEnemyDeath -= AIBase_OnEnemyDeath;
         Blizzard.OnBlizzard -= Blizzard_OnBlizzard;
+        PlayerInput.OnPlayerInput -= PlayerInput_OnPlayerInput;
     }
 }
 

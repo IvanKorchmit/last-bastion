@@ -12,13 +12,22 @@ public class Shop_BuyButton : MonoBehaviour
     private void Start()
     {
         button = GetComponent<Button>();
+        Place.OnPlacecd += Place_OnPlacecd;
     }
+
+    private void Place_OnPlacecd(PurchaseInfo info)
+    {
+        if (info.Good == good)
+        {
+            TimerUtils.AddTimer(cooldown, () => button.interactable = true);
+            button.interactable = false;
+        }
+    }
+
     public void OnClick()
     {
         if (ShopUtils.CanAfford(good.Cost))
         {
-            TimerUtils.AddTimer(cooldown, () => button.interactable = true);
-            button.interactable = false;
             if (good.IsUnit && HumanResourcesUtils.HumanResources == 0)
             {
                 OnGoodSelection?.Invoke(new PurchaseInfo(PurchaseInfo._GoodType.Entity, PurchaseInfo.GoodOperation.Fail, null));

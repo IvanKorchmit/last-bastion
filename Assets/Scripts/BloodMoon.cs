@@ -22,6 +22,7 @@ public class BloodMoon : GameEvent, IEventEndable
 
     private void WavesUtils_OnDayChanged(WavesUtils.DayTime obj)
     {
+        Debug.Log("Called from " + name);
         OnBloodMoonChange?.Invoke(BloodMoonStatus.Begin);
         TimerUtils.AddTimer(10, EndByTime);
     }

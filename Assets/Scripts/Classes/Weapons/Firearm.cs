@@ -40,7 +40,6 @@ public class Firearm : WeaponBase
             }
         }
     }
-
     protected void Shoot(Transform owner, Transform target, float cone)
     {
         Vector2 pos = target.position - owner.transform.position;

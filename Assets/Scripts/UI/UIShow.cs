@@ -41,6 +41,8 @@ public class UIShow : MonoBehaviour
 
     private void WavesUtils_OnDayChanged(WavesUtils.DayTime obj)
     {
+        Debug.Log("Called from " + name + " " + obj.ToString());
+        // throw new System.NotImplementedException();
         if (obj == WavesUtils.DayTime.Day)
         {
             researchCanvas.gameObject.SetActive(true);
@@ -127,7 +129,7 @@ public class UIShow : MonoBehaviour
         }
     }
 
-    private void Place_OnPlacecd()
+    private void Place_OnPlacecd(PurchaseInfo info)
     {
         TimerUtils.AddTimer(0.05f, () => shopWindow.gameObject.SetActive(true));
     }

@@ -50,12 +50,12 @@ public class SpawnerManager : MonoBehaviour
         {
             if (WavesUtils.TimeRemaining <= 0 && !WavesUtils.AreIncoming)
             {
+
                 Spawn();
                 return;
             }
             else if (WavesUtils.AreIncoming)
             {
-                WavesUtils.CheckRemainings();
                 return;
             }
             else

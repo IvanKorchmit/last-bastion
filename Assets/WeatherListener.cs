@@ -17,6 +17,7 @@ public class WeatherListener : MonoBehaviour
         AcidRain.OnAcidRainChange += AcidRain_OnAcidRainChange;
         if (ps == null)
         {
+            Debug.Log($"Called from {name}");
             WavesUtils.OnDayChanged += WavesUtils_OnDayChanged;
             BloodMoon.OnBloodMoonChange += BloodMoon_OnBloodMoonChange;
         }
@@ -34,7 +35,10 @@ public class WeatherListener : MonoBehaviour
 
     private void BloodMoon_OnBloodMoonChange(BloodMoon.BloodMoonStatus info)
     {
-        animator.SetBool("isBloodMoon", info == BloodMoon.BloodMoonStatus.Begin);
+        if (animator != null)
+        {
+            animator.SetBool("isBloodMoon", info == BloodMoon.BloodMoonStatus.Begin);
+        }
     }
 
     private void Blizzard_OnBlizzard(bool isWinter)

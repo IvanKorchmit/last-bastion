@@ -6,6 +6,7 @@ using LastBastion.Waves;
 [RequireComponent(typeof(Stats))]
 public class AIBase : MonoBehaviour, IUnsub
 {
+    [SerializeField] private bool winterResistant;
     public const float WINTER_SLOWDOWN = 1.5f;
     public static event System.Action OnEnemySpawn;
     public static event System.Action OnEnemyDeath;
@@ -28,9 +29,12 @@ public class AIBase : MonoBehaviour, IUnsub
         seeker = GetComponent<Seeker>();
         range = GetComponentInChildren<RangeFinder>();
         WeatherUtils.OnAcidRain += WeatherUtils_OnAcidRain;
-        Calendar.OnWinter_Property += Calendar_OnWinter;
+        if (!winterResistant)
+        {
+            Calendar.OnWinter_Property += Calendar_OnWinter;
+            Blizzard.OnBlizzard += Blizzard_OnBlizzard;
+        }
         BloodMoon.OnBloodMoonChange += BloodMoon_OnBloodMoonChange;
-        Blizzard.OnBlizzard += Blizzard_OnBlizzard;
         OnEnemySpawn?.Invoke();
 
     }
