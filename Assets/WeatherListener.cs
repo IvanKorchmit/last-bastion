@@ -17,7 +17,6 @@ public class WeatherListener : MonoBehaviour
         AcidRain.OnAcidRainChange += AcidRain_OnAcidRainChange;
         if (ps == null)
         {
-            Debug.Log($"Called from {name}");
             WavesUtils.OnDayChanged += WavesUtils_OnDayChanged;
             BloodMoon.OnBloodMoonChange += BloodMoon_OnBloodMoonChange;
         }

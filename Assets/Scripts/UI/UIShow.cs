@@ -25,6 +25,9 @@ public class UIShow : MonoBehaviour
     public Image chaosBar;
     public GameObject weatherInfoPrefab;
     public Transform weatherContents;
+    public TextMeshProUGUI resA;
+    public TextMeshProUGUI resB;
+    public TextMeshProUGUI resC;
     private void Start()
     {
         DialogueUtils.OnDialogueAppeared += DialogueUtils_OnDialogueAppeared;
@@ -41,8 +44,6 @@ public class UIShow : MonoBehaviour
 
     private void WavesUtils_OnDayChanged(WavesUtils.DayTime obj)
     {
-        Debug.Log("Called from " + name + " " + obj.ToString());
-        // throw new System.NotImplementedException();
         if (obj == WavesUtils.DayTime.Day)
         {
             researchCanvas.gameObject.SetActive(true);
@@ -65,7 +66,7 @@ public class UIShow : MonoBehaviour
     {
         while (weatherContents.childCount > 0)
         {
-            GameObject temp = bossHealthTransformPanel.GetChild(0).gameObject;
+            GameObject temp = weatherContents.GetChild(0).gameObject;
             temp.transform.SetParent(null);
             Destroy(temp);
         }
@@ -152,6 +153,9 @@ public class UIShow : MonoBehaviour
         dayCounter.text = $"Day {WavesUtils.WaveNumber}";
         mainMoneyText.text = $"{ShopUtils.Money}$";
         humanResourcesCounterText.text = $"H:{HumanResourcesUtils.HumanResources}";
+        resA.text = $"A:{ShopUtils.ResourceA}";
+        resB.text = $"B:{ShopUtils.ResourceB}";
+        resC.text = $"C:{ShopUtils.ResourceC}";
         chaosBar.fillAmount = HumanResourcesUtils.Chaos / 1f;
     }
     public void ShowUpWindowShop()  

@@ -29,7 +29,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 144072307863266037}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: -90}
 --- !u!114 &358397925
 MonoBehaviour:
@@ -99,10 +99,9 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0.3, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children:
-  - {fileID: 3999106222906314909}
+  m_Children: []
   m_Father: {fileID: 144072307863266037}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1856774024556836937
 MonoBehaviour:
@@ -116,25 +115,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 073797afb82c5a1438f328866b10b3f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_LightType: 3
+  m_LightType: 2
   m_BlendStyleIndex: 0
   m_FalloffIntensity: 1
   m_Color: {r: 1, g: 0.9875816, b: 0.4009434, a: 1}
   m_Intensity: 1
   m_LightVolumeOpacity: 0
   m_ApplyToSortingLayers: 00000000
-  m_LightCookieSprite: {fileID: 21300000, guid: 065e59ccf35070247bdeb839826a3f71, type: 3}
+  m_LightCookieSprite: {fileID: 21300000, guid: efd03ddaa377a91478b003806626e224, type: 3}
   m_UseNormalMap: 1
   m_LightOrder: 0
   m_AlphaBlendOnOverlap: 1
   m_ShadowIntensity: 0
   m_ShadowVolumeIntensity: 0
-  m_PointLightInnerAngle: 360
+  m_PointLightInnerAngle: 0
   m_PointLightOuterAngle: 360
   m_PointLightInnerRadius: 5
   m_PointLightOuterRadius: 7
   m_PointLightDistance: 1.41
-  m_PointLightQuality: 1
+  m_PointLightQuality: 0
   m_ShapeLightParametricSides: 5
   m_ShapeLightParametricAngleOffset: 0
   m_ShapeLightParametricRadius: 1
@@ -176,6 +175,7 @@ Transform:
   m_LocalPosition: {x: -25.46, y: -5.08, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
+  - {fileID: 3999106222906314909}
   - {fileID: 2411766583478496754}
   - {fileID: 358397924}
   m_Father: {fileID: 0}
@@ -295,7 +295,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
-    m_TransformParent: {fileID: 2411766583478496754}
+    m_TransformParent: {fileID: 144072307863266037}
     m_Modifications:
     - target: {fileID: 7055320645410680649, guid: a8119c6628f035342948d8d52104dbe5, type: 3}
       propertyPath: m_RootOrder
@@ -315,7 +315,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7055320645410680649, guid: a8119c6628f035342948d8d52104dbe5, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 0.3000002
       objectReference: {fileID: 0}
     - target: {fileID: 7055320645410680649, guid: a8119c6628f035342948d8d52104dbe5, type: 3}
       propertyPath: m_LocalPosition.z

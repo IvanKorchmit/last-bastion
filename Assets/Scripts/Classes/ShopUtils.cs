@@ -11,11 +11,38 @@ using UnityEngine.EventSystems;
 
 public static class ShopUtils
 {
+    public enum ResourceType
+    {
+        A,B,C
+    }
     private static int money = 10000;
+    private static int resourceA = 0;
+    private static int resourceB = 0;
+    private static int resourceC = 0;
+    public static int ResourceA => resourceA;
+    public static int ResourceB => resourceB;
+    public static int ResourceC => resourceC;
     public static int Money => money;
     public static void GainMoney(int amount)
     {
         money += amount;
+    }
+    public static void GainResource(ResourceType type, int amount)
+    {
+        switch (type)
+        {
+            case ResourceType.A:
+                resourceA += amount;
+                break;
+            case ResourceType.B:
+                resourceB += amount;
+                break;
+            case ResourceType.C:
+                resourceC += amount;
+                break;
+            default:
+                break;
+        }
     }
     public static bool CanAfford(int cost)
     {
@@ -168,8 +195,18 @@ namespace LastBastion.Waves
                 areIncoming = false;
                 timeRemaining = DeFAULT_TIME;
                 waveNumber++;
-               
-                OnDayChanged?.Invoke(DayTime.Day);
+#if UNITY_EDITOR
+                try
+                {
+#endif
+                    OnDayChanged?.Invoke(DayTime.Day);
+#if UNITY_EDITOR
+                }
+                catch (System.Exception ex)
+                {
+                    Debug.LogError(ex.StackTrace);
+                }
+#endif
             }
         }
         public static WaveProps FindWave(WaveProps[] waves)
@@ -245,7 +282,6 @@ public static class Calendar
 
     private static void WavesUtils_OnDayChanged(WavesUtils.DayTime obj)
     {
-        Debug.Log("Called from Calendar");
         if (obj == WavesUtils.DayTime.Day)
         {
             CalculateResources();
@@ -328,7 +364,6 @@ public static class HumanResourcesUtils
 {
     private static float chaos = 0f;
     private static int humanResources = 15;
-
     public static int HumanResources => humanResources;
     public static float Chaos => chaos;
 

@@ -15,8 +15,8 @@ public class SpawnerManager : MonoBehaviour
         if (!wave.IsBoss)
         {
             GameObject[] enemies = wave.WaveEnemies;
-            int w = WavesUtils.WaveNumber;
-            int quantity = Mathf.RoundToInt(((float)w * 1.01f) * 2f);
+            int w = WavesUtils.WaveNumber % 30;
+            int quantity = Mathf.RoundToInt(((float)w * 1.01f) * 1.25f);
             for (int i = 0; i < quantity; i++)
             {
                 Instantiate(enemies[Random.Range(0, enemies.Length)], PositionInside(square), Quaternion.identity);

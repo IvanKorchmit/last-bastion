@@ -57,6 +57,9 @@ public class Stats : MonoBehaviour, IDamagable
             if (lastDamager != null && lastDamager == "Player")
             {
                 ShopUtils.GainMoney(costOnKill);
+                System.Array vals = System.Enum.GetValues(typeof(ShopUtils.ResourceType));
+                ShopUtils.ResourceType type = (ShopUtils.ResourceType)vals.GetValue(Random.Range(0, vals.Length));
+                ShopUtils.GainResource(type, Random.Range(0, 4));
             }
             TimerUtils.AddTimer(0.02f, () => WavesUtils.CheckRemainings());
         }
