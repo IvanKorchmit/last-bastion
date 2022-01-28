@@ -15,7 +15,7 @@ public static class ShopUtils
     {
         A,B,C
     }
-    private static int money = 10000;
+    private static int money = 500;
     private static int resourceA = 0;
     private static int resourceB = 0;
     private static int resourceC = 0;
