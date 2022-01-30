@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using LastBastion.Waves;
+using System.Collections;
 public class SpawnerManager : MonoBehaviour
 {
     public static event System.Action<IDamagable[]> OnBossSpawned;
@@ -9,6 +10,14 @@ public class SpawnerManager : MonoBehaviour
     {
         square = GetComponent<BoxCollider2D>();
     }
+    private IEnumerator SpawnEnemy(GameObject[] enemies, int quantity)
+    {
+        for (int i = 0; i < quantity; i++)
+        {
+            yield return new WaitForSeconds(Random.Range(0f, 4f));
+            Instantiate(enemies[Random.Range(0, enemies.Length)], PositionInside(square), Quaternion.identity);
+        }
+    }
     public void Spawn()
     {
         WaveProps wave = WavesUtils.FindWave(waves);
@@ -17,10 +26,7 @@ public class SpawnerManager : MonoBehaviour
             GameObject[] enemies = wave.WaveEnemies;
             int w = WavesUtils.WaveNumber % 30 == 0 ? 1 : WavesUtils.WaveNumber % 30;
             int quantity = Mathf.RoundToInt(((float)w * 1.01f) * 1.05f);
-            for (int i = 0; i < quantity; i++)
-            {
-                Instantiate(enemies[Random.Range(0, enemies.Length)], PositionInside(square), Quaternion.identity);
-            }
+            StartCoroutine(SpawnEnemy(enemies,quantity));
         }
         else
         {
@@ -50,7 +56,6 @@ public class SpawnerManager : MonoBehaviour
         {
             if (WavesUtils.TimeRemaining <= 0 && !WavesUtils.AreIncoming)
             {
-
                 Spawn();
                 return;
             }

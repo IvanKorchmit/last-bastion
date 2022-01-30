@@ -6,11 +6,13 @@ public class Wall : MonoBehaviour, IDamagable
 {
     [SerializeField] private float health;
     [SerializeField] private float maxHealth;
+    private Vector2Int sectorIndex;
     public float Health => health;
     public float MaxHealth => MaxHealth;
     private void Start()
     {
         maxHealth = health;
+        Sectors.AddGameObject(gameObject, out sectorIndex);
     }
     public void Damage(float d, GameObject owner)
     {
@@ -20,6 +22,10 @@ public class Wall : MonoBehaviour, IDamagable
     public void SetDurability(float v)
     {
         maxHealth = v;
+    }
+    private void OnDestroy()
+    {
+        Sectors.RemoveGameObject(gameObject, sectorIndex);
     }
     private void CheckHealth()
     {

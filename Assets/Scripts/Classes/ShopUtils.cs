@@ -19,13 +19,28 @@ public static class ShopUtils
     private static int resourceA = 0;
     private static int resourceB = 0;
     private static int resourceC = 0;
+    private static int pendingMoney;
     public static int ResourceA => resourceA;
     public static int ResourceB => resourceB;
     public static int ResourceC => resourceC;
     public static int Money => money;
+    static ShopUtils()
+    {
+        WavesUtils.OnDayChanged += WavesUtils_OnDayChanged;
+    }
+
+    private static void WavesUtils_OnDayChanged(WavesUtils.DayTime dayTime)
+    {
+        if (dayTime == WavesUtils.DayTime.Day)
+        {
+            money += pendingMoney;
+            pendingMoney = 0;
+        }
+    }
+
     public static void GainMoney(int amount)
     {
-        money += amount;
+        pendingMoney += amount;
     }
     public static void GainResource(ResourceType type, int amount)
     {
@@ -102,139 +117,140 @@ public static class GameUtils
         DialogueUtils.Dialogue(endContent);
     }
 }
-namespace LastBastion.Dialogue
+namespace LastBastion
 {
-    public static class DialogueUtils
+    namespace Dialogue
     {
-        public delegate void DialogueDelegate(Content content);
-        public static event DialogueDelegate OnDialogueAppeared;
-        public static void Dialogue(Content content)
+        public static class DialogueUtils
         {
-            OnDialogueAppeared?.Invoke(content);
+            public delegate void DialogueDelegate(Content content);
+            public static event DialogueDelegate OnDialogueAppeared;
+            public static void Dialogue(Content content)
+            {
+                OnDialogueAppeared?.Invoke(content);
 
-        }
-    }
-    public class Content
-    {
-        public class Choice
-        {
-            public delegate bool ChoiceAction();
-            private ChoiceAction action;
-            private string text;
-            private Content alternativeResponse;
-            private Content next;
-            public Choice(string text, ChoiceAction action, Content next, Content alt)
-            {
-                this.text = text;
-                this.action = action;
-                this.next = next;
-                alternativeResponse = alt;
             }
-            public string Text => text;
-            public void OnChoice()
+        }
+        public class Content
+        {
+            public class Choice
             {
-                if (action())
+                public delegate bool ChoiceAction();
+                private ChoiceAction action;
+                private string text;
+                private Content alternativeResponse;
+                private Content next;
+                public Choice(string text, ChoiceAction action, Content next, Content alt)
                 {
-                    if (next != null)
+                    this.text = text;
+                    this.action = action;
+                    this.next = next;
+                    alternativeResponse = alt;
+                }
+                public string Text => text;
+                public void OnChoice()
+                {
+                    if (action())
                     {
-                        DialogueUtils.Dialogue(next);
+                        if (next != null)
+                        {
+                            DialogueUtils.Dialogue(next);
+                        }
+                    }
+                    else
+                    {
+                        DialogueUtils.Dialogue(alternativeResponse);
                     }
                 }
-                else
-                {
-                    DialogueUtils.Dialogue(alternativeResponse);
-                }
             }
-        }
-        private Choice[] choices;
-        private string text;
-        public string Text => text;
-        public Choice[] Choices => choices;
-        public Content(Choice[] choices, string text)
-        {
-            this.choices = choices;
-            this.text = text;
+            private Choice[] choices;
+            private string text;
+            public string Text => text;
+            public Choice[] Choices => choices;
+            public Content(Choice[] choices, string text)
+            {
+                this.choices = choices;
+                this.text = text;
+            }
         }
     }
-}
-namespace LastBastion.Waves
-{
-    public static class WavesUtils
+    namespace Waves
     {
-        static WavesUtils()
+        public static class WavesUtils
         {
-        }
-        public enum DayTime
-        {
-            Day, Night
-        }
-        public static event System.Action<DayTime> OnDayChanged;
-        private const int DeFAULT_TIME = 30;
-        public const string TS_PATH = "TechnicalStuff";
-        public const string COLONY_PATH = TS_PATH + "/Colony";
-        private static int waveNumber = 1;
-        private static int timeRemaining = DeFAULT_TIME;
-        private static bool areIncoming = false;
-        public static bool AreIncoming => areIncoming;
-
-        public static void SetIncoming()
-        {
-            areIncoming = true;
-        }
-
-        public static int WaveNumber => waveNumber;
-        public static void DecrementTime()
-        {
-            timeRemaining--;
-        }
-        public static int TimeRemaining => timeRemaining;
-        public static void CheckRemainings()
-        {
-            if (GameObject.FindGameObjectsWithTag("Enemy").Length <= 0)
+            public enum DayTime
             {
-                areIncoming = false;
-                timeRemaining = DeFAULT_TIME;
-                waveNumber++;
-#if UNITY_EDITOR
-                try
-                {
-#endif
-                    OnDayChanged?.Invoke(DayTime.Day);
-#if UNITY_EDITOR
-                }
-                catch (System.Exception ex)
-                {
-                    Debug.LogError(ex.StackTrace);
-                }
-#endif
+                Day, Night
             }
-        }
-        public static WaveProps FindWave(WaveProps[] waves)
-        {
-            OnDayChanged?.Invoke(DayTime.Night);
-            WaveProps temp = default(WaveProps);
-            foreach (WaveProps w in waves)
+            public static event System.Action<DayTime> OnDayChanged;
+            private const int DeFAULT_TIME = 30;
+            public const string TS_PATH = "TechnicalStuff";
+            public const string COLONY_PATH = TS_PATH + "/Colony";
+            private static int waveNumber = 1;
+            private static int timeRemaining = DeFAULT_TIME;
+            private static bool areIncoming = false;
+            public static bool AreIncoming => areIncoming;
+
+            public static void SetIncoming()
             {
-                if (w.WaveNumber <= waveNumber)
+                areIncoming = true;
+            }
+
+            public static int WaveNumber => waveNumber;
+            public static void DecrementTime()
+            {
+                timeRemaining--;
+            }
+            public static int TimeRemaining => timeRemaining;
+            public static void CheckRemainings()
+            {
+                if (GameObject.FindGameObjectsWithTag("Enemy").Length <= 0)
                 {
-                    temp = w;
+                    areIncoming = false;
+                    timeRemaining = DeFAULT_TIME;
+                    waveNumber++;
+#if UNITY_EDITOR
+                    try
+                    {
+#endif
+                        OnDayChanged?.Invoke(DayTime.Day);
+#if UNITY_EDITOR
+                    }
+                    catch (System.Exception ex)
+                    {
+                        Debug.LogError(ex.StackTrace);
+                    }
+#endif
                 }
             }
-            return temp;
-        }
+            public static WaveProps FindWave(WaveProps[] waves)
+            {
+                OnDayChanged?.Invoke(DayTime.Night);
+                WaveProps temp = default(WaveProps);
+                foreach (WaveProps w in waves)
+                {
+                    if (w.WaveNumber <= waveNumber)
+                    {
+                        temp = w;
+                    }
+                }
+                return temp;
+            }
 
-    }
-    [System.Serializable]
-    public class WaveProps
-    {
-        [SerializeField] private int waveNumber;
-        [SerializeField] private GameObject[] waveEnemies;
-        [SerializeField] private bool isBossWave;
-        [SerializeField] private GameObject[] bosses;
-        public int WaveNumber => waveNumber;
-        public GameObject[] WaveEnemies => waveEnemies;
-        public bool IsBoss => isBossWave;
-        public GameObject[] Bosses => bosses;
+        }
+        [System.Serializable]
+        public class WaveProps
+        {
+            [SerializeField] private int waveNumber;
+            [SerializeField] private GameObject[] waveEnemies;
+            [SerializeField] private bool isBossWave;
+            [SerializeField] private GameObject[] bosses;
+            public int WaveNumber => waveNumber;
+            public GameObject[] WaveEnemies => waveEnemies;
+            public bool IsBoss => isBossWave;
+            public GameObject[] Bosses => bosses;
+
+        }
     }
 }
 public static class Calendar
@@ -457,6 +473,128 @@ public class InputInfo
     }
 }
 
+public static class Sectors
+{
+    public const int SECTOR_SIZE = 2;
+    private static Vector2Int size = new Vector2Int(40, 20);
+    public static Vector2Int GridSize => size;
+    public static Vector2 OriginPosition => origin.position;
+    private class Sector
+    {
+        public List<GameObject> contents = new List<GameObject>(5);
+    }
+    private static Transform origin = GameObject.Find("SectorOrigin").transform;
+    private static Sector[,] grid = new Sector[size.x, size.y];
+    static Sectors()
+    {
+        for (int x = 0; x < grid.GetLength(0); x++)
+        {
+            for (int y = 0; y < grid.GetLength(1); y++)
+            {
+                grid[x, y] = new Sector();
+            }
+        }
+        AIBase.OnEnemyDeath += AIBase_OnEnemyDeath;
+        WavesUtils.OnDayChanged += WavesUtils_OnDayChanged;
+        ColonySystem.OnEnemyEnter += ColonySystem_OnEnemyEnter;
+    }
+
+    private static void ColonySystem_OnEnemyEnter()
+    {
+        ClearNulls();
+    }
+    private static void WavesUtils_OnDayChanged(WavesUtils.DayTime obj)
+    {
+        ClearNulls();
+    }
+
+    private static void ClearNulls()
+    {
+        for (int x = 0; x < grid.GetLength(0); x++)
+        {
+            for (int y = 0; y < grid.GetLength(1); y++)
+            {
+                grid[x, y].contents.RemoveAll((m) => m == null);
+            }
+        }
+    }
+    private static void AIBase_OnEnemyDeath()
+    {
+        ClearNulls();
+    }
+
+    public static void AddGameObject(GameObject obj, out Vector2Int index)
+    {
+        if (obj == null)
+        {
+            index = Vector2Int.zero;
+            return;
+        }
+        Sector s = SectorAtPosition(obj.transform.position, out Vector2Int result);
+        if (s.contents.Contains(obj))
+        {
+            index = Vector2Int.RoundToInt(result);
+            return;
+        }
+        s.contents.Add(obj);
+        index = result;
+        Debug.Log($"Added {obj.name} at {result}");
+    }
+    public static void RemoveGameObject(GameObject obj, Vector2Int index)
+    {
+        Debug.Log($"Trying to remove at {index}");
+        if (obj == null) return;
+        Sector s = grid[index.x, index.y];
+        if (s.contents.Contains(obj))
+        {
+            s.contents.Remove(obj);
+        }
+    }
+    public static bool HasSomething(Vector2Int ind)
+    {
+        return grid[ind.x, ind.y].contents.Count > 0;
+    }
+    private static Sector SectorAtPosition(Vector2 position, out Vector2Int result)
+    {
+        Vector2Int index = PositionToSectorIndex(position);
+        result = index;
+        return grid[index.x, index.y];
+    }
+    public static Vector2Int PositionToSectorIndex(Vector2 position)
+    {
+        position = Vector2Utils.Ceil(position);
+        Vector2 proc = origin.InverseTransformPoint(position);
+        Vector2Int index = Vector2Int.RoundToInt(proc / SECTOR_SIZE);
+        return index;
+    }
+    public static Vector2 PositionAtSector(Vector2Int index)
+    {
+        Vector2 result = origin.TransformPoint((Vector2)index);
+        return result;
+    }
+
+
+}
+
+public static class Vector2Utils
+{
+    public static Vector2 Abs(this Vector2 vec)
+    {
+        return new Vector2(Mathf.Abs(vec.x), Mathf.Abs(vec.y));
+    }
+    public static Vector2 Round(Vector2 vec)
+    {
+        return new Vector2(Mathf.Round(vec.x), Mathf.Round(vec.y));
+    }
+    public static Vector2 Ceil(Vector2 vec)
+    {
+        return new Vector2(Mathf.Ceil(vec.x), Mathf.Ceil(vec.y));
+    }
+    public static Vector2 Floor(Vector2 vec)
+    {
+        return new Vector2(Mathf.Floor(vec.x), Mathf.Floor(vec.y));
+    }
+}
 
 public interface ISelectable
 {

@@ -18,6 +18,7 @@ public class Place : MonoBehaviour
         if (info.GoodStatus == PurchaseInfo.GoodOperation.Fail) return;
         goodToPlace = info.Good;
         lastPurchase = info;
+        SectorsGizmo.DrawSectors();
     }
 
     private void OnGUI()
@@ -27,23 +28,29 @@ public class Place : MonoBehaviour
             if (goodToPlace != null)
             {
                 Vector2 mouse = Input.mousePosition;
-
                 Vector2 pos = Camera.main.ScreenToWorldPoint(mouse);
-                pos = Vector2Int.FloorToInt(pos);
-                var entity = Instantiate(goodToPlace.Prefab, goodToPlace.IsUnit ? GameObject.Find(WavesUtils.COLONY_PATH).transform.position : (Vector3)pos, Quaternion.identity);
-                
-                // Checking if the current good a living Unit?
-                if (goodToPlace.IsUnit)
+                pos = Vector2Utils.Round(pos / Sectors.SECTOR_SIZE) * Sectors.SECTOR_SIZE - Vector2.one / 2;
+                if (!Sectors.HasSomething(Sectors.PositionToSectorIndex(pos)))
                 {
-                    entity.GetComponent<UnitAI>().Initialize(pos);
-                    HumanResourcesUtils.TakeOne();
-                    entity.GetComponent<UnitAI>().Weapon = goodToPlace.Weapon;
+                    var entity = Instantiate(goodToPlace.Prefab, goodToPlace.IsUnit ? GameObject.Find(WavesUtils.COLONY_PATH).transform.position : (Vector3)pos, Quaternion.identity);
+
+                    // Checking if the current good a living Unit?
+                    if (goodToPlace.IsUnit)
+                    {
+                        entity.GetComponent<UnitAI>().Initialize(pos);
+                        HumanResourcesUtils.TakeOne();
+                        entity.GetComponent<UnitAI>().Weapon = goodToPlace.Weapon;
 
 
+                    }
+                    else
+                    {
+                        Sectors.AddGameObject(entity, out Vector2Int unused);
+                    }
+                    ShopUtils.Buy(goodToPlace);
+                    goodToPlace = null;
+                    OnPlacecd?.Invoke(lastPurchase);
                 }
-                ShopUtils.Buy(goodToPlace);
-                goodToPlace = null;
-                OnPlacecd?.Invoke(lastPurchase);
             }
         }
     }

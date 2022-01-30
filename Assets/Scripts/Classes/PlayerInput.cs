@@ -9,14 +9,12 @@ class PlayerInput : MonoBehaviour
     private bool triggered;
     private float time;
 
-
-
     private float timePressed = 0.0f;
     private float timeLastPress = 0.0f;
-    public float timeDelayThreshold = 0.25f;
+    [SerializeField] private float timeDelayThreshold = 0.25f;
+#if UNITY_ANDROID
 
-
-    void checkForLongPress(float tim)
+    private void checkForLongPress(float tim)
     {
         if (Input.touchCount == 0) return;
         if (Input.GetTouch(0).phase == TouchPhase.Began)
@@ -62,14 +60,15 @@ class PlayerInput : MonoBehaviour
             }
         }
     }
-
+#endif
 
 
 
     private void Update()
     {
+#if UNITY_ANDROID
         checkForLongPress(timeDelayThreshold);
-#if !UNITY_ANDROID
+#else
         if (Input.GetKeyDown(KeyCode.F))
         {
             OnPlayerInput?.Invoke(new InputInfo(Camera.main.ScreenToWorldPoint(Input.mousePosition), InputInfo.CommandType.Follow));

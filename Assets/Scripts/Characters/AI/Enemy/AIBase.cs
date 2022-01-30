@@ -22,6 +22,8 @@ public class AIBase : MonoBehaviour, IUnsub
     protected IDamagable target;
     public const float BLOOD_MOON_MULT = 3f;
     private bool isBlizzard;
+    private Vector2Int sectorIndex;
+    private Vector2Int oldSectorIndex;
     protected virtual void Start()
     {
         initSpeed = speed;
@@ -68,14 +70,35 @@ public class AIBase : MonoBehaviour, IUnsub
         SoundManager.PlaySound(acidDamage, transform.position);
         stats.Damage(value, null);
     }
+    private void FixedUpdate()
+    {
+        Sectors.AddGameObject(gameObject, out sectorIndex);
+        if (sectorIndex != oldSectorIndex)
+        {
+            try
+            {
+                Sectors.RemoveGameObject(gameObject, oldSectorIndex);
 
+            }
+            catch (System.Exception ex)
+            {
+                Debug.Log(ex.StackTrace);
+                Debug.Log(oldSectorIndex);
+                throw;
+            }
+            oldSectorIndex = sectorIndex;
+        }
+    }
+    private void OnDestroy()
+    {
+        UnsubAll();
+    }
     protected virtual void Update()
     {
         MoveAlong();
         transform.Translate(moveDirection * speed * Time.deltaTime);
         TimerUtils.AddTimer(0.5f, Attack);
         UpdateTarget();
-        
     }
     private void UpdateTarget()
     {
@@ -181,11 +204,3 @@ public class AIBase : MonoBehaviour, IUnsub
         OnEnemyDeath?.Invoke();
     }
 }
-
-public interface IDamagable
-{
-    void Damage(float d, GameObject owner);
-    float Health { get; }
-    float MaxHealth { get; }
-    Transform transform { get; }
-}   
