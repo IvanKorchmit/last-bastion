@@ -1,15 +1,21 @@
 ﻿using UnityEngine;
-
-public class CalendarManager : MonoBehaviour
+namespace LastBastion
 {
-    [SerializeField]
-    private Calendar.Month[] months;
-    private void Awake()
+
+    namespace TimeSystem
     {
-        Calendar.months = months;
-    }
-    private void Update()
-    {
-        TimerUtils.AddTimer(1, WeatherUtils.Update);
+        public class CalendarManager : MonoBehaviour
+        {
+            [SerializeField]
+            private Calendar.Month[] months;
+            private void Awake()
+            {
+                Calendar.months = months;
+            }
+            private void Update()
+            {
+                TimerUtils.AddTimer(1, WeatherUtils.Update);
+            }
+        }
     }
 }

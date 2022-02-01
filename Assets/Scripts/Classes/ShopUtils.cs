@@ -8,70 +8,8 @@ using UnityEngine.UI;
 using LastBastion.Dialogue;
 using LastBastion.Waves;
 using UnityEngine.EventSystems;
+using LastBastion.TimeSystem.Events;
 
-public static class ShopUtils
-{
-    public enum ResourceType
-    {
-        A,B,C
-    }
-    private static int money = 500;
-    private static int resourceA = 0;
-    private static int resourceB = 0;
-    private static int resourceC = 0;
-    private static int pendingMoney;
-    public static int ResourceA => resourceA;
-    public static int ResourceB => resourceB;
-    public static int ResourceC => resourceC;
-    public static int Money => money;
-    static ShopUtils()
-    {
-        WavesUtils.OnDayChanged += WavesUtils_OnDayChanged;
-    }
-
-    private static void WavesUtils_OnDayChanged(WavesUtils.DayTime dayTime)
-    {
-        if (dayTime == WavesUtils.DayTime.Day)
-        {
-            money += pendingMoney;
-            pendingMoney = 0;
-        }
-    }
-
-    public static void GainMoney(int amount)
-    {
-        pendingMoney += amount;
-    }
-    public static void GainResource(ResourceType type, int amount)
-    {
-        switch (type)
-        {
-            case ResourceType.A:
-                resourceA += amount;
-                break;
-            case ResourceType.B:
-                resourceB += amount;
-                break;
-            case ResourceType.C:
-                resourceC += amount;
-                break;
-            default:
-                break;
-        }
-    }
-    public static bool CanAfford(int cost)
-    {
-        return money >= cost;
-    }
-    public static void Buy(Good good)
-    {
-        money -= good.Cost;
-    }
-    public static void Buy(int cost)
-    {
-        money -= cost;
-    }
-}
 public static class GameUtils
 {
     public enum GameOverReason
@@ -80,7 +18,7 @@ public static class GameUtils
     }
     public static void EndGame(GameOverReason reason)
     {
-        Content.Choice[] Ok = new Content.Choice[] { new Content.Choice("End game",
+        DialogueContent.Choice[] Ok = new DialogueContent.Choice[] { new DialogueContent.Choice("End game",
                     () =>
                     {
                         if(!Application.isEditor)
@@ -96,17 +34,17 @@ public static class GameUtils
                         return true;
                         }, null, null)
                     };
-        Content endContent = null;
+        DialogueContent endContent = null;
         switch (reason)
         {
             case GameOverReason.Lose:
                 {
-                    endContent = new Content(Ok, "You have lost the game. Chaos has increased to high amounts and people are now leaving this order!");
+                    endContent = new DialogueContent(Ok, "You have lost the game. Chaos has increased to high amounts and people are now leaving this order!");
                 }
                 break;
             case GameOverReason.DemoOver:
 
-                endContent = new Content(Ok, "Thanks for playiing demo! Wait for further development later!!");
+                endContent = new DialogueContent(Ok, "Thanks for playiing demo! Wait for further development later!!");
 
                 break;
             case GameOverReason.CampaignComplete:
@@ -123,24 +61,24 @@ namespace LastBastion
     {
         public static class DialogueUtils
         {
-            public delegate void DialogueDelegate(Content content);
+            public delegate void DialogueDelegate(DialogueContent content);
             public static event DialogueDelegate OnDialogueAppeared;
-            public static void Dialogue(Content content)
+            public static void Dialogue(DialogueContent content)
             {
                 OnDialogueAppeared?.Invoke(content);
 
             }
         }
-        public class Content
+        public class DialogueContent
         {
             public class Choice
             {
                 public delegate bool ChoiceAction();
                 private ChoiceAction action;
                 private string text;
-                private Content alternativeResponse;
-                private Content next;
-                public Choice(string text, ChoiceAction action, Content next, Content alt)
+                private DialogueContent alternativeResponse;
+                private DialogueContent next;
+                public Choice(string text, ChoiceAction action, DialogueContent next, DialogueContent alt)
                 {
                     this.text = text;
                     this.action = action;
@@ -167,10 +105,308 @@ namespace LastBastion
             private string text;
             public string Text => text;
             public Choice[] Choices => choices;
-            public Content(Choice[] choices, string text)
+            public DialogueContent(Choice[] choices, string text)
             {
                 this.choices = choices;
                 this.text = text;
+            }
+        }
+    }
+    namespace Economy
+    {
+        public struct FinanceProfile
+        {
+            public struct Debt
+            {
+                private BankBase bank; // Bank itself
+                private int amount; // Amount of debt
+                private int deadLine; // Days
+                public int Amount => amount;
+                public int Deadline => deadLine;
+                public BankBase Bank => bank;
+                public Debt(BankBase bank, int amount, int deadLine)
+                {
+                    this.bank = bank;
+                    this.amount = amount;
+                    this.deadLine = deadLine;
+                }
+            }
+            private int moneySpent;
+            private int moneyReceived;
+            private List<Debt> debts;
+            public List<Debt> Debts => debts;
+            public float Percentage
+            {
+                get
+                {
+                    if (moneySpent == 0)
+                    {
+                        return float.NaN;
+                    }
+                    return (moneyReceived - moneySpent) / moneySpent;
+                }
+            }
+            public FinanceProfile(int moneySpent, int moneyReceived)
+            {
+                this.moneySpent = moneySpent;
+                this.moneyReceived = moneyReceived;
+                debts = new List<Debt>(5);
+            }
+            public void AddMoneyReceived(int value)
+            {
+                if (value <= 0) return;
+                moneyReceived += value;
+            }
+            public void AddMoneySpent(int value)
+            {
+                if (value <= 0) return;
+                moneySpent += value;
+            }
+        }
+        public abstract class BankBase : ScriptableObject
+        {
+            [SerializeField] protected float percentage;
+            [SerializeField] protected int availableAmount;
+            [SerializeField] protected int debtDeadlineCheck;
+            public float Percentage => percentage;
+            public abstract bool Decide(FinanceProfile profile, int currentAmount);
+            public abstract void Offer();
+        }
+        public static class ShopUtils
+        {
+            public enum ResourceType
+            {
+                A, B, C
+            }
+            private static int money = 500;
+            private static int resourceA = 0;
+            private static int resourceB = 0;
+            private static int resourceC = 0;
+            private static int pendingMoney;
+            private static FinanceProfile profile = new FinanceProfile(0,0);
+            public static int ResourceA => resourceA;
+            public static int ResourceB => resourceB;
+            public static int ResourceC => resourceC;
+            public static int Money => money;
+            public static FinanceProfile Profile => profile;
+            static ShopUtils()
+            {
+                WavesUtils.OnDayChanged += WavesUtils_OnDayChanged;
+            }
+            public static void AddDebtAndReceiveMoney(BankBase bank)
+            {
+                profile.Debts.Add(new FinanceProfile.Debt(bank, Mathf.RoundToInt(1000f * bank.Percentage), 5));
+            }
+            private static void WavesUtils_OnDayChanged(WavesUtils.DayTime dayTime)
+            {
+                if (dayTime == WavesUtils.DayTime.Day)
+                {
+                    money += pendingMoney;
+                    pendingMoney = 0;
+                }
+            }
+
+            public static void GainMoney(int amount)
+            {
+                pendingMoney += amount;
+            }
+            public static void GainResource(ResourceType type, int amount)
+            {
+                switch (type)
+                {
+                    case ResourceType.A:
+                        resourceA += amount;
+                        break;
+                    case ResourceType.B:
+                        resourceB += amount;
+                        break;
+                    case ResourceType.C:
+                        resourceC += amount;
+                        break;
+                    default:
+                        break;
+                }
+            }
+            public static bool CanAfford(int cost)
+            {
+                return money >= cost;
+            }
+            public static void Buy(Good good)
+            {
+                money -= good.Cost;
+            }
+            public static void Buy(int cost)
+            {
+                money -= cost;
+            }
+        }
+    }
+    namespace TimeSystem
+    {
+        public static class Calendar
+        {
+            [System.Serializable]
+            public struct Month
+            {
+                public string name;
+                public Day[] days;
+            }
+            private static Animator cameraAnimatorReference = Camera.main.GetComponent<Animator>();
+            public static Month[] months;
+            public delegate void WinterDelegate(bool isWinter);
+            public delegate void FogDelegate(bool isFog);
+            public static event FogDelegate OnFog;
+            private static event WinterDelegate OnWinter;
+            public static event WinterDelegate OnWinter_Property
+            {
+                add
+                {
+                    OnWinter += value;
+                    Update();
+                }
+                remove
+                {
+                    OnWinter -= value;
+                    Update();
+                }
+            }
+            [System.Serializable]
+            public struct Day
+            {
+                public enum WeatherType
+                {
+                    None, Winter, Fog
+                }
+                public WeatherType weather;
+                public GameEvent gameEvent;
+                public int number;
+            }
+            static Calendar()
+            {
+                WavesUtils.OnDayChanged += WavesUtils_OnDayChanged;
+            }
+
+            private static void WavesUtils_OnDayChanged(WavesUtils.DayTime obj)
+            {
+                if (obj == WavesUtils.DayTime.Day)
+                {
+                    CalculateResources();
+                }
+            }
+
+            public static Animator CameraAnimatorReference => cameraAnimatorReference;
+            public static void Update()
+            {
+                OnWinter?.Invoke(IsWinter(false));
+            }
+            public static void CalculateResources()
+            {
+                IsWinter(true);
+                if (WavesUtils.WaveNumber % 3 == 0)
+                {
+                    HumanResourcesUtils.IncreaseHumanResources();
+                }
+            }
+            public static bool IsWinter(bool doApply)
+            {
+                bool isWinter = false;
+                foreach (Month month in months)
+                {
+                    Day[] days = month.days;
+                    if (days.Last().number < WavesUtils.WaveNumber)
+                    {
+                        continue;
+                    }
+                    if (days.Last().number < WavesUtils.WaveNumber)
+                    {
+                        GameUtils.EndGame(GameUtils.GameOverReason.DemoOver);
+                        return isWinter;
+                    }
+                    for (int i = days.Length - 1; i >= 0; i--)
+                    {
+                        Day day = days[i];
+                        if (WavesUtils.WaveNumber >= day.number)
+                        {
+                            if (day.gameEvent != null)
+                            {
+                                if (doApply)
+                                {
+                                    WeatherUtils.ApplyEvent(day.gameEvent);
+                                    if (day.weather == Day.WeatherType.Fog)
+                                    {
+                                        OnFog?.Invoke(true);
+                                    }
+                                    else
+                                    {
+                                        OnFog?.Invoke(false);
+                                    }
+                                }
+                            }
+                            else if (doApply)
+                            {
+                                WeatherUtils.ApplyEvent(null);
+                                if (day.weather == Day.WeatherType.Fog)
+                                {
+                                    OnFog?.Invoke(true);
+                                }
+                                else
+                                {
+                                    OnFog?.Invoke(false);
+                                }
+                            }
+                            return day.weather == Day.WeatherType.Winter;
+                        }
+                        else
+                        {
+                            isWinter = day.weather == Day.WeatherType.Winter;
+                        }
+                    }
+                }
+                return isWinter;
+            }
+        }
+
+        public static class WeatherUtils
+        {
+            private static BoxCollider2D area = GameObject.Find("TechnicalStuff/MeteorArea").GetComponent<BoxCollider2D>();
+            private static GameEvent currentEvent = null;
+            public delegate void DamagableDel(float value);
+            public static event DamagableDel OnAcidRain;
+            public enum Status
+            {
+                None, AcidRain, MeteorRain
+            }
+            public static Status status;
+            public static void Update()
+            {
+                if (WavesUtils.AreIncoming)
+                {
+                    switch (status)
+                    {
+                        case Status.None:
+                            break;
+                        case Status.AcidRain:
+                            {
+                                OnAcidRain?.Invoke(Random.Range(2f, 4f));
+                            }
+                            break;
+                        case Status.MeteorRain:
+                            if (Random.value >= 0.7f)
+                            {
+                                GameObject.Instantiate((currentEvent as MeteorRain).MeteorPrefab, SpawnerManager.PositionInside(area), Quaternion.identity);
+                            }
+                            break;
+                    }
+                }
+            }
+            public static void ApplyEvent(GameEvent e)
+            {
+                if (currentEvent != null && currentEvent is IEventEndable ev)
+                {
+                    ev.End();
+                }
+                currentEvent = e;
+                currentEvent?.Launch();
             }
         }
     }
@@ -253,128 +489,6 @@ namespace LastBastion
         }
     }
 }
-public static class Calendar
-{
-    [System.Serializable]
-    public struct Month
-    {
-        public string name;
-        public Day[] days;
-    }
-    private static Animator cameraAnimatorReference = Camera.main.GetComponent<Animator>();
-    public static Month[] months;
-    public delegate void WinterDelegate(bool isWinter);
-    public delegate void FogDelegate(bool isFog);
-    public static event FogDelegate OnFog;
-    private static event WinterDelegate OnWinter;
-    public static event WinterDelegate OnWinter_Property 
-    {
-        add
-        {
-            OnWinter += value;
-            Update();
-        }
-        remove
-        {
-            OnWinter -= value;
-            Update();
-        }
-    }
-    [System.Serializable]
-    public struct Day
-    {
-        public enum WeatherType
-        {
-            None, Winter, Fog
-        }
-        public WeatherType weather;
-        public GameEvent gameEvent;
-        public int number;
-    }
-    static Calendar()
-    {
-        WavesUtils.OnDayChanged += WavesUtils_OnDayChanged;
-    }
-
-    private static void WavesUtils_OnDayChanged(WavesUtils.DayTime obj)
-    {
-        if (obj == WavesUtils.DayTime.Day)
-        {
-            CalculateResources();
-        }
-    }
-
-    public static Animator CameraAnimatorReference => cameraAnimatorReference;
-    public static void Update()
-    {
-        OnWinter?.Invoke(IsWinter(false));
-    }
-    public static void CalculateResources()
-    {
-        IsWinter(true);
-        if (WavesUtils.WaveNumber % 3 == 0)
-        {
-            HumanResourcesUtils.IncreaseHumanResources();
-        }
-    }
-    public static bool IsWinter(bool doApply)
-    {
-        bool isWinter = false;
-        foreach (Month month in months)
-        {
-            Day[] days = month.days;
-            if (days.Last().number < WavesUtils.WaveNumber)
-            {
-                continue;
-            }
-            if (days.Last().number < WavesUtils.WaveNumber)
-            {
-                GameUtils.EndGame(GameUtils.GameOverReason.DemoOver);
-                return isWinter;
-            }
-            for (int i = days.Length - 1; i >= 0; i--)
-            {
-                Day day = days[i];
-                if (WavesUtils.WaveNumber >= day.number)
-                {
-                    if (day.gameEvent != null)
-                    {
-                        if (doApply)
-                        {
-                            WeatherUtils.ApplyEvent(day.gameEvent);
-                            if (day.weather == Day.WeatherType.Fog)
-                            {
-                                OnFog?.Invoke(true);
-                            }
-                            else
-                            {
-                                OnFog?.Invoke(false);
-                            }
-                        }
-                    }
-                    else if (doApply)
-                    {
-                        WeatherUtils.ApplyEvent(null);
-                        if (day.weather == Day.WeatherType.Fog)
-                        {
-                            OnFog?.Invoke(true);
-                        }
-                        else
-                        {
-                            OnFog?.Invoke(false);
-                        }
-                    }
-                    return day.weather == Day.WeatherType.Winter;
-                }
-                else
-                {
-                    isWinter = day.weather == Day.WeatherType.Winter;
-                }
-            }
-        }
-        return isWinter;
-    }
-}
 
 public static class HumanResourcesUtils
 {
@@ -413,49 +527,6 @@ public static class HumanResourcesUtils
     }
 }
 
-public static class WeatherUtils
-{
-    private static BoxCollider2D area = GameObject.Find("TechnicalStuff/MeteorArea").GetComponent<BoxCollider2D>();
-    private static GameEvent currentEvent = null;
-    public delegate void DamagableDel(float value);
-    public static event DamagableDel OnAcidRain;
-    public enum Status
-    {
-        None, AcidRain, MeteorRain
-    }
-    public static Status status;
-    public static void Update()
-    {
-        if (WavesUtils.AreIncoming)
-        {
-            switch (status)
-            {
-                case Status.None:
-                    break;
-                case Status.AcidRain:
-                    {
-                        OnAcidRain?.Invoke(Random.Range(2f, 4f));
-                    }
-                    break;
-                case Status.MeteorRain:
-                    if (Random.value >= 0.7f)
-                    {
-                        GameObject.Instantiate((currentEvent as MeteorRain).MeteorPrefab, SpawnerManager.PositionInside(area), Quaternion.identity);
-                    }
-                    break;
-            }
-        }
-    }
-    public static void ApplyEvent(GameEvent e)
-    {
-        if (currentEvent != null && currentEvent is IEventEndable ev)
-        {
-            ev.End();
-        }
-        currentEvent = e;
-        currentEvent?.Launch();
-    }
-}
 public class InputInfo
 {
     public enum CommandType
@@ -600,4 +671,17 @@ public interface ISelectable
 {
     void OnSelect();
     void OnDeselect();
+}
+public interface IEventEndable
+{
+    void End();
+}
+
+public interface IUnsub
+{
+    void UnsubAll();
+}
+public interface IWeaponStoppable
+{
+    void Stop(Transform owner);
 }

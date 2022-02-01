@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Pathfinding;
+using LastBastion.TimeSystem;
+using LastBastion.TimeSystem.Events;
 public class UnitAI : MonoBehaviour, ISelectable, IUnsub
 {
     [SerializeField] private AudioClip acidDamage;
@@ -248,8 +250,3 @@ public class UnitAI : MonoBehaviour, ISelectable, IUnsub
     }
 }
 
-
-public interface IUnsub
-{
-    void UnsubAll();
-}

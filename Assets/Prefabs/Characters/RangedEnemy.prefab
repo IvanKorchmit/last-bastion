@@ -355,6 +355,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d117f1aefebc91646846f04e7c1b074e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  winterResistant: 0
   acidDamage: {fileID: 8300000, guid: 4f14e896a4715a947819b417f83383db, type: 3}
   speed: 1
   isAttacking: 0
@@ -378,7 +379,7 @@ MonoBehaviour:
   rangedDamage: 10
   healthBar: {fileID: 0}
   armorBar: {fileID: 0}
-  costOnKill: 75
+  costOnKill: 25
   fire: {fileID: 7544903403086643348}
 --- !u!114 &8756620602860579868
 MonoBehaviour:

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using LastBastion.Economy;
 public class Shop_BuyButton : MonoBehaviour
 {
     public delegate void BuyDelegate(PurchaseInfo info);

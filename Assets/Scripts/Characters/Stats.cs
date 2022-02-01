@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using LastBastion.Waves;
+using LastBastion.Economy;
 public class Stats : MonoBehaviour, IDamagable
 {
     [SerializeField]
@@ -34,6 +35,14 @@ public class Stats : MonoBehaviour, IDamagable
     [SerializeField] ParticleSystem fire;
     public void Damage(float d, GameObject owner)
     {
+        d = Random.Range(-d, d);
+        if (d <= 0) return;
+        float target = 0.1f;
+        float randValue = Random.value;
+        if (randValue < (1f-target))
+        {
+            d *= 1.5f;
+        }
         health -= d;
         lastDamager = owner != null ? owner.tag : null;
         lastDamagerGO = owner;

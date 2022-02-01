@@ -1,7 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using LastBastion.TimeSystem;
+using LastBastion.TimeSystem.Events;
 public class TriggerOnWinter : MonoBehaviour
 {
     private Animator animator;

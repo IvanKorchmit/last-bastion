@@ -27,7 +27,3 @@ public class Flamethrower : Firearm, IWeaponStoppable
         flame.GetComponent<ParticleSystem>().Stop();
     }
 }
-public interface IWeaponStoppable
-{
-    void Stop(Transform owner);
-}

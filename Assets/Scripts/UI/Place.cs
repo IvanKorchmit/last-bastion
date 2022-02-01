@@ -3,6 +3,7 @@ using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using Pathfinding;
 using LastBastion.Waves;
+using LastBastion.Economy;
 public class Place : MonoBehaviour
 {
     public static event System.Action<PurchaseInfo> OnPlacecd;

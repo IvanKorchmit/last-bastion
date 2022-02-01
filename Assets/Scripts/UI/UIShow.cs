@@ -7,6 +7,8 @@ using LastBastion.Dialogue;
 using LastBastion.Waves;
 using System.Linq;
 using UnityEngine.Events;
+using LastBastion.Economy;
+using LastBastion.TimeSystem;
 public class UIShow : MonoBehaviour
 {
     public UnityEvent onNight;
@@ -110,7 +112,7 @@ public class UIShow : MonoBehaviour
     {
         OnDialogueClose?.Invoke();
     }
-    private void DialogueUtils_OnDialogueAppeared(Content content)
+    private void DialogueUtils_OnDialogueAppeared(DialogueContent content)
     {
         dialoguePanel.gameObject.SetActive(true);
         TextMeshProUGUI text = dialoguePanel.Find("Content/Text").GetComponent<TextMeshProUGUI>();
