@@ -12,29 +12,18 @@ namespace LastBastion
             {
                 public override void Launch()
                 {
-                    DialogueContent.Choice[] Ok = new DialogueContent.Choice[] { new DialogueContent.Choice("Okay",
-            () => {
-                UIShow.CloseDialogue();
-                return true;
-            }, null, null)
-        };
-                    DialogueContent yesContent = new DialogueContent(Ok, "Good, we are now good :)");
-                    DialogueContent noContent = new DialogueContent(Ok, "NO we are dying of starvation now :'(");
-                    DialogueContent.Choice noChoice = new DialogueContent.Choice("No", Deny, noContent, null);
-                    DialogueContent falseYesContent = new DialogueContent(new DialogueContent.Choice[] { noChoice }, "Looks like you do not have enough money for that :(");
-                    DialogueContent.Choice yesChoice = new DialogueContent.Choice("Yes", SpendMoney, yesContent, falseYesContent);
+                    DialogueContent success = DialogueUtils.GenerateDialogue("Thank you! Now we can fight for you!", DialogueUtils.OK);
+                    DialogueContent fail = DialogueUtils.GenerateDialogue("Looks like you do not have enough money for that... Please, we are dying of starvation!", DialogueUtils.OK);
+                    DialogueContent deny = DialogueUtils.GenerateDialogue("I am really sorry to hear that... Please, we are dying of starvation!", DialogueUtils.OK);
+                    DialogueContent.Choice yes = DialogueUtils.CreateChoice("Sure, I will spend 100$ for that!", SpendMoney, success, fail);
+                    DialogueContent.Choice no = DialogueUtils.CreateChoice("No, I will decline this request!", Deny, deny);
+                    DialogueContent main = DialogueUtils.GenerateDialogue("Hello, we are hungry and we acquire some ration in order to survive!",yes,no);
 
-                    DialogueContent.Choice[] choices = new DialogueContent.Choice[] {
-            yesChoice,
-            noChoice
-        };
-
-                    DialogueContent mainContent = new DialogueContent(choices, "Hello, we are hungry");
+                    DialogueUtils.Dialogue(main);
 
 
-                    DialogueUtils.Dialogue(mainContent);
-                }
-                private bool SpendMoney()
+            }
+                private bool SpendMoney()   
                 {
                     if (ShopUtils.CanAfford(100))
                     {

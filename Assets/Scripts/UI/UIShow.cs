@@ -13,7 +13,7 @@ public class UIShow : MonoBehaviour
 {
     public UnityEvent onNight;
     public UnityEvent onDay;
-    private static event System.Action OnDialogueClose;
+    public static event System.Action OnDialogueClose;
     public TextMeshProUGUI lowerPanelDisplayInfo;
     public TextMeshProUGUI mainMoneyText;
     public TextMeshProUGUI humanResourcesCounterText;
