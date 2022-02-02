@@ -11,6 +11,10 @@ public class LandMine : MonoBehaviour, IDamagable
     public float Health => 0f;
 
     public float MaxHealth => 0f;
+    void OnDestroy()
+    {
+        Sectors.RemoveGameObject(gameObject, Sectors.PositionToSectorIndex(transform.position));
+    }
 
     void Start()
     {
@@ -24,7 +28,6 @@ public class LandMine : MonoBehaviour, IDamagable
             TimerUtils.AddTimer(1f,Blast);
         }
     }
-
     private void Blast()
     {
         RaycastHit2D[] res = Physics2D.CircleCastAll(transform.position, radius, Vector2.zero);

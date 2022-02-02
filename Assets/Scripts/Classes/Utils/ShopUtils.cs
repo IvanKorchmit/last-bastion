@@ -211,17 +211,6 @@ namespace LastBastion
                 }
             }
         }
-        public abstract class BankBase : ScriptableObject
-        {
-            [SerializeField] protected float percentage;
-            [SerializeField] protected int minimalAmount;
-            [SerializeField] protected int debtDeadlineCheck;
-            public float Percentage => percentage;
-            public abstract bool Decide(FinanceProfile profile, int currentAmount);
-            public abstract void Offer();
-            public abstract void OnDeadlinePassed(int debt);
-            public abstract void Awake();
-        }
         public static class ShopUtils
         {
             public enum ResourceType
@@ -660,11 +649,9 @@ public static class Sectors
         }
         s.contents.Add(obj);
         index = result;
-        Debug.Log($"Added {obj.name} at {result}");
     }
     public static void RemoveGameObject(GameObject obj, Vector2Int index)
     {
-        Debug.Log($"Trying to remove at {index}");
         if (obj == null) return;
         Sector s = grid[index.x, index.y];
         if (s.contents.Contains(obj))

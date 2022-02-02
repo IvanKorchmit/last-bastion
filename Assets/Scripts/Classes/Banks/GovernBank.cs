@@ -38,13 +38,22 @@ namespace LastBastion
 
 
 
-                DialogueContent.Choice acceptOffer = DialogueUtils.CreateChoice("Accept offer and take 1000$", AcceptOffer, success);
-                DialogueContent.Choice declineOffer = DialogueUtils.CreateChoice("Accept offer and take 1000$", () => { UIShow.CloseDialogue(); return true; }, deny);
+                DialogueContent.Choice acceptOffer = DialogueUtils.CreateChoice("Accept offer and take 1000$", AcceptOffer, success, fail);
+                DialogueContent.Choice declineOffer = DialogueUtils.CreateChoice("No, I won't accept this offer", () => { UIShow.CloseDialogue(); return true; }, deny);
                 DialogueContent main = DialogueUtils.GenerateDialogue("Hello, thank you for choosing us.", acceptOffer, declineOffer);
+
+
+
+                DialogueUtils.Dialogue(main);
             }
             public bool AcceptOffer()
             {
-                return Decide(ShopUtils.Profile, ShopUtils.Money);
+                bool decision = Decide(ShopUtils.Profile, ShopUtils.Money);
+                if (decision)
+                {
+                    ShopUtils.Profile.Debts.Add(new FinanceProfile.Debt(this, minimalAmount, debtDeadlineCheck));
+                }
+                return decision;
             }
 
             public override void OnDeadlinePassed(int debt)
@@ -71,7 +80,7 @@ namespace LastBastion
             }
             public override void Awake()
             {
-                ShopUtils.Profile.Debts.Add(new FinanceProfile.Debt(this, minimalAmount, debtDeadlineCheck));
+                TimerUtils.AddTimer(1,Offer);
                 Debug.Log("Added debt automatically for debugging purposes");
             }
         }

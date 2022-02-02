@@ -47,11 +47,7 @@ public class TimerUtils : MonoBehaviour
             }
         }
     }
-    private static List<Timer> timer;
-    private void Start()
-    {
-        timer = new List<Timer>();
-    }
+    private static List<Timer> timer = new List<Timer>();
     private void Update()
     {
         for (int i = 0; i < timer.Count; i++)

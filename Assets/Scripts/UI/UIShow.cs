@@ -114,21 +114,29 @@ public class UIShow : MonoBehaviour
     }
     private void DialogueUtils_OnDialogueAppeared(DialogueContent content)
     {
-        dialoguePanel.gameObject.SetActive(true);
-        TextMeshProUGUI text = dialoguePanel.Find("Content/Text").GetComponent<TextMeshProUGUI>();
-        text.text = content.Text;
-        Transform buttons = dialoguePanel.Find("Buttons");
-        while (buttons.childCount > 0)
+        try
         {
-            Transform child = buttons.GetChild(0);
-            child.SetParent(null);
-            MonoBehaviour.Destroy(child.gameObject);
+
+            dialoguePanel.gameObject.SetActive(true);
+            TextMeshProUGUI text = dialoguePanel.Find("Content/Text").GetComponent<TextMeshProUGUI>();
+            text.text = content.Text;
+            Transform buttons = dialoguePanel.Find("Buttons");
+            while (buttons.childCount > 0)
+            {
+                Transform child = buttons.GetChild(0);
+                child.SetParent(null);
+                MonoBehaviour.Destroy(child.gameObject);
+            }
+            for (int i = 0; i < content.Choices.Length; i++)
+            {
+                Button b = MonoBehaviour.Instantiate(choiceButtonPrefab, buttons).GetComponent<Button>();
+                b.onClick.AddListener(content.Choices[i].OnChoice);
+                b.transform.Find("Text").GetComponent<TextMeshProUGUI>().text = content.Choices[i].Text;
+            }
         }
-        for (int i = 0; i < content.Choices.Length; i++)
+        catch (System.Exception ex)
         {
-            Button b = MonoBehaviour.Instantiate(choiceButtonPrefab, buttons).GetComponent<Button>();
-            b.onClick.AddListener(content.Choices[i].OnChoice);
-            b.transform.Find("Text").GetComponent<TextMeshProUGUI>().text = content.Choices[i].Text;
+            Debug.LogError(ex.StackTrace);
         }
     }
 

@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: GovernBank
   m_EditorClassIdentifier: 
   percentage: 1.1
-  minimalAmount: 0
-  debtDeadlineCheck: 5
+  minimalAmount: 1000
+  debtDeadlineCheck: 1

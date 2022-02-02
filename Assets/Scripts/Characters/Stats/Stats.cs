@@ -35,7 +35,7 @@ public class Stats : MonoBehaviour, IDamagable
     [SerializeField] ParticleSystem fire;
     public void Damage(float d, GameObject owner)
     {
-        d = Random.Range(-d, d);
+        d = Random.Range(0, d);
         if (d <= 0) return;
         float target = 0.1f;
         float randValue = Random.value;
