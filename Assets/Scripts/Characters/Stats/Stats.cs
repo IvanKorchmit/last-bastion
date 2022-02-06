@@ -61,19 +61,26 @@ public class Stats : MonoBehaviour, IDamagable
     }
     private void Death()
     {
-        if (CompareTag("Enemy"))
+        try
         {
-            if (lastDamager != null && lastDamager == "Player")
+            if (CompareTag("Enemy"))
             {
-                ShopUtils.GainMoney(costOnKill);
-                System.Array vals = System.Enum.GetValues(typeof(ShopUtils.ResourceType));
-                ShopUtils.ResourceType type = (ShopUtils.ResourceType)vals.GetValue(Random.Range(0, vals.Length));
-                ShopUtils.GainResource(type, Random.Range(0, 4));
+                if (lastDamager != null && lastDamager == "Player")
+                {
+                    ShopUtils.GainMoney(costOnKill);
+                    System.Array vals = System.Enum.GetValues(typeof(ShopUtils.ResourceType));
+                    ShopUtils.ResourceType type = (ShopUtils.ResourceType)vals.GetValue(Random.Range(0, vals.Length));
+                    ShopUtils.GainResource(type, Random.Range(0, 4));
+                }
             }
-            TimerUtils.AddTimer(0.02f, () => WavesUtils.CheckRemainings());
+            GetComponent<IUnsub>().UnsubAll();
+            Destroy(gameObject);
         }
-        GetComponent<IUnsub>().UnsubAll();
-        Destroy(gameObject);
+        catch (System.Exception ex)
+        {
+            Debug.Log(ex.StackTrace);
+        }
+
     }
 
     private void Start()

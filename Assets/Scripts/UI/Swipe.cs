@@ -6,8 +6,13 @@ using UnityEngine.Experimental.Rendering.Universal;
 public class Swipe : MonoBehaviour
 {
     [SerializeField] private float sensitivity;
+    [SerializeField] private float deceleration = 1.5f;
     [SerializeField] private float scroll;
     [SerializeField] private bool isInCanvas = false;
+    [SerializeField] private bool isClamped;
+    [SerializeField] private Transform bottomLeft;
+    [SerializeField] private Transform topRight;
+
     public float zoomOutMin = 8;
     public float zoomOutMax = 256;
     private Camera self;
@@ -19,25 +24,16 @@ public class Swipe : MonoBehaviour
         {
 #if UNITY_ANDROID
             Vector2 currentMouse = new Vector2();
-            if (Input.touchCount > 0 )
+            if (Input.touchCount == 1)
             {
                 Touch touch = Input.GetTouch(0);
-                currentMouse = isInCanvas ? touch.deltaPosition : -touch.deltaPosition / ppCam.assetsPPU;
-                // currentMouse /= screen;
-            }
-            else
-            {
-                return new Vector2();
+                currentMouse = isInCanvas ? touch.position : (Vector2)self.ScreenToWorldPoint(touch.position);
             }
 #else
             Vector2 currentMouse = !isInCanvas ? self.ScreenToWorldPoint(Input.mousePosition) : Input.mousePosition;
 #endif
-#if !UNITY_ANDROID
-            return -currentMouse - previousPos;
+            return currentMouse - previousPos;
 
-#else
-            return currentMouse;
-#endif
         }
     }
     private void Start()
@@ -48,24 +44,48 @@ public class Swipe : MonoBehaviour
     void Update()
     {
 #if !UNITY_ANDROID
+        if (Input.GetMouseButtonDown(0))
+#else 
+        if(Input.touchCount == 1 && Input.GetTouch(0).phase == TouchPhase.Began)
+#endif
+        {
+#if !UNITY_ANDROID
+            previousPos = !isInCanvas ? self.ScreenToWorldPoint(Input.mousePosition) : Input.mousePosition;
+#else
+                previousPos = !isInCanvas ? (Vector2)self.ScreenToWorldPoint(Input.GetTouch(0).position) : Input.GetTouch(0).position;
+#endif
+        }
+#if !UNITY_ANDROID
         if (Input.GetMouseButton(0))
         {
+#else
+        if (Input.touchCount == 1)
+        {
 #endif
-            Vector2 delta = MouseDelta;
+            Vector2 delta = !isInCanvas ? -MouseDelta : MouseDelta;
             transform.Translate(delta.x * Time.deltaTime * sensitivity, delta.y * Time.deltaTime * sensitivity, 0);
-            previousPos += delta;
-
-#if !UNITY_ANDROID
         }
+#if !UNITY_ANDROID
+        else if (Input.GetMouseButtonUp(0))
+#else
+        if (Input.touchCount == 1 && Input.GetTouch(0).phase == TouchPhase.Ended)
+#endif
+        {
+            previousPos = !isInCanvas ? -MouseDelta : MouseDelta;
+
+        }
+#if !UNITY_ANDROID
         else
         {
-            previousPos += MouseDelta;
-        }
+#else
+        else if (Input.touchCount == 0)
+        {
 #endif
+            previousPos = Vector2.Lerp(previousPos, Vector2.zero, Time.deltaTime * deceleration);
+        }
         if (!isInCanvas)
         {
 #if UNITY_ANDROID
-
             if (Input.touchCount == 2)
             {
                 Touch touchZero = Input.GetTouch(0);
@@ -79,24 +99,41 @@ public class Swipe : MonoBehaviour
 
                 float difference = currentMagnitude - prevMagnitude;
 
-                zoom(difference * scroll);
+                Zoom(difference * scroll);
             }
-
-
-
-
 #else
-            ppCam.assetsPPU += Mathf.RoundToInt((Input.mouseScrollDelta.y * scroll) / 4) * 4;
-            ppCam.assetsPPU = Mathf.Clamp(ppCam.assetsPPU, 8, 256);
+            ppCam.assetsPPU += Mathf.RoundToInt((Input.mouseScrollDelta.y * scroll) / 2) * 2;
+            ppCam.assetsPPU = Mathf.Clamp(ppCam.assetsPPU, (int)zoomOutMin, (int)zoomOutMax);
 #endif
-            //previousPos = Vector2.Lerp(previousPos,delta,0.5f);
+
+        }
+#if !UNITY_ANDROID
+        if (!Input.GetMouseButton(0))
+        {
+#else
+        if (Input.touchCount == 0)
+        {
+#endif
+            transform.Translate(previousPos.x * Time.deltaTime * sensitivity, previousPos.y * Time.deltaTime * sensitivity, 0);
+        }
+        if (isClamped)
+        {
+            ClampPosition();
         }
     }
 #if UNITY_ANDROID
 
-    void zoom(float increment)
+    void Zoom(float increment)
     {
-        ppCam.assetsPPU = Mathf.RoundToInt(Mathf.Clamp((float)ppCam.assetsPPU + increment, zoomOutMin, zoomOutMax) / 4) * 4;
+        ppCam.assetsPPU = Mathf.RoundToInt(Mathf.Clamp((float)ppCam.assetsPPU + increment, zoomOutMin, zoomOutMax) / 2) * 2;
     }
 #endif
+    private void ClampPosition()
+    {
+        float z = transform.position.z;
+        Vector3 clamped = Vector2Utils.Clamp(transform.position, bottomLeft.position, topRight.position);
+        clamped.z = z;
+        transform.position = clamped;
+        
+    }
 }

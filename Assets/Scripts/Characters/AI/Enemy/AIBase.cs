@@ -93,6 +93,7 @@ public class AIBase : MonoBehaviour, IUnsub
     }
     private void OnDestroy()
     {
+        OnEnemyDeath?.Invoke();
         UnsubAll();
     }
     protected virtual void Update()
@@ -203,6 +204,5 @@ public class AIBase : MonoBehaviour, IUnsub
         Calendar.OnWinter_Property -= Calendar_OnWinter;
         BloodMoon.OnBloodMoonChange -= BloodMoon_OnBloodMoonChange;
         Blizzard.OnBlizzard -= Blizzard_OnBlizzard;
-        OnEnemyDeath?.Invoke();
     }
 }

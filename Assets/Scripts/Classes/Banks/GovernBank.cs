@@ -11,7 +11,7 @@ namespace LastBastion
             
             public override bool Decide(FinanceProfile profile, int currentAmount)
             {
-                if (profile.Percentage > 0.6f && profile.Debts.Count <= 1)
+                if (profile.Percentage > -0.3f && profile.Debts.Count <= 1)
                 {
                     foreach (FinanceProfile.Debt d in profile.Debts)
                     {
@@ -49,9 +49,10 @@ namespace LastBastion
             public bool AcceptOffer()
             {
                 bool decision = Decide(ShopUtils.Profile, ShopUtils.Money);
+                // Debug.Log(ShopUtils.Profile);
                 if (decision)
                 {
-                    ShopUtils.Profile.Debts.Add(new FinanceProfile.Debt(this, minimalAmount, debtDeadlineCheck));
+                    ShopUtils.AddDebtAndReceiveMoney(this);
                 }
                 return decision;
             }
@@ -77,11 +78,6 @@ namespace LastBastion
                 DialogueContent main = DialogueUtils.GenerateDialogue($"Hello, according to your deadline, you have to give us our money back right now with a percentage of {100 - Mathf.RoundToInt(percentage * 100)}%." +
                     $"Meaning, with your initial debt of {debt}, you have to pay us {debt * percentage}",payment,denyChoice);
                 DialogueUtils.Dialogue(main);
-            }
-            public override void Awake()
-            {
-                TimerUtils.AddTimer(1,Offer);
-                Debug.Log("Added debt automatically for debugging purposes");
             }
         }
     }

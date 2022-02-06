@@ -167,38 +167,36 @@ namespace LastBastion
                     }
                 }
             }
-            private int moneySpent;
-            private int moneyReceived;
+            private int _moneySpent;
+            private int _moneyReceived;
             private List<Debt> debts;
             public List<Debt> Debts => debts;
             public float Percentage
             {
                 get
                 {
-                    if (moneySpent == 0)
+                    if (_moneySpent == 0)
                     {
                         return float.NaN;
                     }
-                    return (moneyReceived - moneySpent) / moneySpent;
+                    return (float)(_moneyReceived - _moneySpent) / (float)_moneySpent;
                 }
             }
             public FinanceProfile(int moneySpent, int moneyReceived)
             {
-                this.moneySpent = moneySpent;
-                this.moneyReceived = moneyReceived;
+                this._moneySpent = moneySpent;
+                this._moneyReceived = moneyReceived;
                 debts = new List<Debt>(5);
                 WavesUtils.OnDayChanged += WavesUtils_OnDayChanged;
             }
 
             public void AddMoneyReceived(int value)
             {
-                if (value <= 0) return;
-                moneyReceived += value;
+                _moneyReceived += value;
             }
             public void AddMoneySpent(int value)
             {
-                if (value <= 0) return;
-                moneySpent += value;
+                _moneySpent += value;    
             }
             private void WavesUtils_OnDayChanged(WavesUtils.DayTime obj)
             {
@@ -210,6 +208,11 @@ namespace LastBastion
                     }
                 }
             }
+            public override string ToString()
+            {
+                string res = $"Spent: {_moneySpent}\nReceived:{_moneyReceived}\nPercentage:{Percentage}";
+                return res;
+            }
         }
         public static class ShopUtils
         {
@@ -217,51 +220,52 @@ namespace LastBastion
             {
                 A, B, C
             }
-            private static int money = 500;
-            private static int resourceA = 0;
-            private static int resourceB = 0;
-            private static int resourceC = 0;
-            private static int pendingMoney;
-            private static FinanceProfile profile = new FinanceProfile(0,0);
-            public static int ResourceA => resourceA;
-            public static int ResourceB => resourceB;
-            public static int ResourceC => resourceC;
-            public static int Money => money;
-            public static FinanceProfile Profile => profile;
+            private static int _money = 500;
+            private static int _resourceA = 0;
+            private static int _resourceB = 0;
+            private static int _resourceC = 0;
+            private static int _pendingMoney;
+            private static FinanceProfile _profile = new FinanceProfile(0,0);
+            public static int ResourceA => _resourceA;
+            public static int ResourceB => _resourceB;
+            public static int ResourceC => _resourceC;
+            public static int Money => _money;
+            public static FinanceProfile Profile => _profile;
             static ShopUtils()
             {
                 WavesUtils.OnDayChanged += WavesUtils_OnDayChanged;
             }
             public static void AddDebtAndReceiveMoney(BankBase bank)
             {
-                profile.Debts.Add(new FinanceProfile.Debt(bank, 1000, 5));
+                _profile.Debts.Add(new FinanceProfile.Debt(bank, 1000, bank.Deadline));
+                _money += 1000;
             }
             private static void WavesUtils_OnDayChanged(WavesUtils.DayTime dayTime)
             {
                 if (dayTime == WavesUtils.DayTime.Day)
                 {
-                    money += pendingMoney;
-                    profile.AddMoneyReceived(pendingMoney);
-                    pendingMoney = 0;
+                    _money += _pendingMoney;
+                    _profile.AddMoneyReceived(_pendingMoney);
+                    _pendingMoney = 0;
                 }
             }
 
             public static void GainMoney(int amount)
             {
-                pendingMoney += amount;
+                _pendingMoney += amount;
             }
             public static void GainResource(ResourceType type, int amount)
             {
                 switch (type)
                 {
                     case ResourceType.A:
-                        resourceA += amount;
+                        _resourceA += amount;
                         break;
                     case ResourceType.B:
-                        resourceB += amount;
+                        _resourceB += amount;
                         break;
                     case ResourceType.C:
-                        resourceC += amount;
+                        _resourceC += amount;
                         break;
                     default:
                         break;
@@ -269,15 +273,36 @@ namespace LastBastion
             }
             public static bool CanAfford(int cost)
             {
-                return money >= cost;
+                return _money >= cost;
+            }
+            public static bool CanAfford(int cost, int a, int b, int c)
+            {
+                return _money >= cost && _resourceA >= a && _resourceB >= b && _resourceC >= c;
             }
             public static void Buy(Good good)
             {
-                money -= good.Cost;
+                _money -= good.Cost;
+                _profile.AddMoneySpent(good.Cost);
             }
             public static void Buy(int cost)
             {
-                money -= cost;
+                _money -= cost;
+                _profile.AddMoneySpent(cost);
+            }
+            public static void Buy(int cost, ResourceType type)
+            {
+                switch (type)
+                {
+                    case ResourceType.A:
+                        _resourceA -= cost;
+                        break;
+                    case ResourceType.B:
+                        _resourceB -= cost;
+                        break;
+                    case ResourceType.C:
+                        _resourceC -= cost;
+                        break;
+                }
             }
         }
     }
@@ -462,29 +487,33 @@ namespace LastBastion
             private const int DeFAULT_TIME = 30;
             public const string TS_PATH = "TechnicalStuff";
             public const string COLONY_PATH = TS_PATH + "/Colony";
-            private static int waveNumber = 1;
-            private static int timeRemaining = DeFAULT_TIME;
-            private static bool areIncoming = false;
-            public static bool AreIncoming => areIncoming;
+            private static int _waveNumber = 1;
+            private static int _timeRemaining = DeFAULT_TIME;
+            private static bool _areIncoming = false;
+            public static bool AreIncoming => _areIncoming;
 
             public static void SetIncoming()
             {
-                areIncoming = true;
+                _areIncoming = true;
+            }
+            static WavesUtils()
+            {
+                AIBase.OnEnemyDeath += CheckRemainings;
             }
 
-            public static int WaveNumber => waveNumber;
+            public static int WaveNumber => _waveNumber;
             public static void DecrementTime()
             {
-                timeRemaining--;
+                _timeRemaining--;
             }
-            public static int TimeRemaining => timeRemaining;
+            public static int TimeRemaining => _timeRemaining;
             public static void CheckRemainings()
             {
                 if (GameObject.FindGameObjectsWithTag("Enemy").Length <= 0)
                 {
-                    areIncoming = false;
-                    timeRemaining = DeFAULT_TIME;
-                    waveNumber++;
+                    _areIncoming = false;
+                    _timeRemaining = DeFAULT_TIME;
+                    _waveNumber++;
 #if UNITY_EDITOR
                     try
                     {
@@ -505,7 +534,7 @@ namespace LastBastion
                 WaveProps temp = default(WaveProps);
                 foreach (WaveProps w in waves)
                 {
-                    if (w.WaveNumber <= waveNumber)
+                    if (w.WaveNumber <= _waveNumber)
                     {
                         temp = w;
                     }
@@ -702,6 +731,12 @@ public static class Vector2Utils
     public static Vector2 Floor(Vector2 vec)
     {
         return new Vector2(Mathf.Floor(vec.x), Mathf.Floor(vec.y));
+    }
+    public static Vector2 Clamp(Vector2 value, Vector2 min, Vector2 max)
+    {
+        value.x = Mathf.Clamp(value.x, min.x, max.x);
+        value.y = Mathf.Clamp(value.y, min.y, max.y);
+        return value;
     }
 }
 

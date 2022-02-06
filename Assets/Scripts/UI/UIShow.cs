@@ -19,7 +19,7 @@ public class UIShow : MonoBehaviour
     public TextMeshProUGUI humanResourcesCounterText;
     public RectTransform shopWindow;
     public RectTransform dialoguePanel;
-    public RectTransform researchCanvas;
+    [SerializeField] private RectTransform researchCanvas;
     public GameObject choiceButtonPrefab;
     public TextMeshProUGUI dayCounter;
     public GameObject bossHealthPrefab;
@@ -48,7 +48,6 @@ public class UIShow : MonoBehaviour
     {
         if (obj == WavesUtils.DayTime.Day)
         {
-            researchCanvas.gameObject.SetActive(true);
             ShowWeather();
             while (bossHealthTransformPanel.childCount > 0)
             {
@@ -61,7 +60,6 @@ public class UIShow : MonoBehaviour
         else
         {
             onNight?.Invoke();
-            researchCanvas.gameObject.SetActive(false);
         }
     }
     private void ShowWeather()
@@ -83,8 +81,8 @@ public class UIShow : MonoBehaviour
             for (int i = WavesUtils.WaveNumber,j = 0; i + j < month.days.Length && j < 5; i++,j++)
             {
                 Instantiate(weatherInfoPrefab, weatherContents).GetComponent<WeatherInfo>().Init(i + j);
-
             }
+            break;
         }
     }
     private void SpawnerManager_OnBossSpawned(IDamagable[] obj)

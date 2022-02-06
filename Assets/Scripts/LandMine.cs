@@ -11,11 +11,6 @@ public class LandMine : MonoBehaviour, IDamagable
     public float Health => 0f;
 
     public float MaxHealth => 0f;
-    void OnDestroy()
-    {
-        Sectors.RemoveGameObject(gameObject, Sectors.PositionToSectorIndex(transform.position));
-    }
-
     void Start()
     {
         radius = circle.radius;
@@ -46,6 +41,7 @@ public class LandMine : MonoBehaviour, IDamagable
         }
         Instantiate(explosionParticle, transform.position, Quaternion.identity);
         SoundManager.PlaySound(explosionSound, transform.position);
+        Sectors.RemoveGameObject(gameObject, Sectors.PositionToSectorIndex(transform.position));
         Destroy(gameObject);
 
     }
