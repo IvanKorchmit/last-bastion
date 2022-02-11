@@ -29,7 +29,7 @@ public class SectorsGizmo : MonoBehaviour
             {
                 Vector2 o = (Vector2)transform.position;
                 Vector2 i = new Vector2(x,y) * Sectors.SECTOR_SIZE;
-                Vector2 pos = o + i;
+                Vector2 pos = o + i + Vector2.one / 2;
                 Gizmos.color = Sectors.HasSomething(new Vector2Int(x,y)) ? Color.green : Color.red;
                 Gizmos.DrawWireCube(pos, new Vector3(Sectors.SECTOR_SIZE, Sectors.SECTOR_SIZE, 1));
             }
@@ -58,7 +58,7 @@ public class SectorsGizmo : MonoBehaviour
             {
                 Vector2 o = (Vector2)origin.position;
                 Vector2 i = new Vector2(x, y) * Sectors.SECTOR_SIZE;
-                Vector2 pos = o + i;
+                Vector2 pos = o + i + Vector2.one / 2;
                 var sec = Instantiate(staticPrefab, pos, Quaternion.identity).GetComponent<SpriteRenderer>();
                 sec.color = Sectors.HasSomething(new Vector2Int(x, y)) ? Color.red : Color.green;
                 sectors.Add(sec);

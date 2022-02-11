@@ -7,8 +7,10 @@ public class TileSetter : MonoBehaviour
 {
     [SerializeField] private Tilemap tilemap;
     [SerializeField] private RandomTile[] randTile;
+    [SerializeField] private RandomSizeTile[] randSizedTile;
     private void Start()
     {
+
         Vector3Int offset = tilemap.origin;
         for (int x = 0; x < tilemap.size.x; x++)
         {
@@ -23,12 +25,20 @@ public class TileSetter : MonoBehaviour
                         break;
                     }
                 }
+                foreach (RandomSizeTile t in randSizedTile)
+                {
+                    if (t.IsMatch((Tile)tilemap.GetTile(pos)))
+                    {
+                        tilemap.SetTile(pos, t.GetTIle((Vector2Int)pos));
+                        break;
+                    }
+                }
             }
         }
     }
 
 }
-[System.Serializable] 
+[System.Serializable]
 public struct RandomTile
 {
     [SerializeField] private Tile from;
@@ -39,4 +49,33 @@ public struct RandomTile
     }
     public Tile @Tile => to[Random.Range(0, to.Length)];
 
+}
+[System.Serializable]
+public struct RandomSizeTile
+{
+    [SerializeField] private Tile from;
+    [SerializeField] private RandomLargeTile[] to;
+    [SerializeField] private Vector2Int size;
+    public bool IsMatch(Tile from)
+    {
+        return this.from == from;
+    }
+    public Tile GetTIle(Vector2Int position)
+    {
+        Vector2Int mod = Vector2Utils.IntMod(position, size);
+        return to[Random.Range(0, to.Length)].GetTIle(position, size);
+
+    }
+}
+[System.Serializable]
+public struct RandomLargeTile
+{
+    [SerializeField] private Tile[] tiles;
+    public Tile GetTIle(Vector2Int position, Vector2Int size)
+    {
+        Vector2Int mod = new Vector2Int(Mathf.Abs(position.x % size.x) /*+ (position.y % size.y == 1 ? 1 : 0)*/, Mathf.Abs(position.y % size.y));
+        int index = Mathf.Abs(mod.x * size.x + mod.y);
+        Debug.Log($"{index} {tiles.Length}");
+        return tiles[index];
+    }
 }

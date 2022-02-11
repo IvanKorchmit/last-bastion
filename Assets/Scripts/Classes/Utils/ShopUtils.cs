@@ -738,6 +738,13 @@ public static class Vector2Utils
         value.y = Mathf.Clamp(value.y, min.y, max.y);
         return value;
     }
+    public static Vector2Int IntMod (Vector2Int a, Vector2Int b)
+    {
+        Vector2Int result = a;
+        a.x %= b.x;
+        a.y %= b.y;
+        return result;
+    }
 }
 
 public interface ISelectable
