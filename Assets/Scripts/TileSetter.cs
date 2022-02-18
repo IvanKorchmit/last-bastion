@@ -75,7 +75,6 @@ public struct RandomLargeTile
     {
         Vector2Int mod = new Vector2Int(Mathf.Abs(position.x % size.x) /*+ (position.y % size.y == 1 ? 1 : 0)*/, Mathf.Abs(position.y % size.y));
         int index = Mathf.Abs(mod.x * size.x + mod.y);
-        Debug.Log($"{index} {tiles.Length}");
         return tiles[index];
     }
 }

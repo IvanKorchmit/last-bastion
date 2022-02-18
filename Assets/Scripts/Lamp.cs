@@ -9,7 +9,6 @@ public class Lamp : MonoBehaviour, IDamagable
     public float Health => health;
 
     public float MaxHealth => maxHealth;
-
     public void Damage(float d, GameObject owner)
     {
         health -= d;
@@ -19,6 +18,7 @@ public class Lamp : MonoBehaviour, IDamagable
     {
         if (health < 0)
         {
+            Sectors.RemoveGameObject(gameObject, Sectors.PositionToSectorIndex(transform.position));
             Destroy(gameObject);
         }
     }
@@ -26,4 +26,5 @@ public class Lamp : MonoBehaviour, IDamagable
     {
         maxHealth = health;
     }
+    
 }

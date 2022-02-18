@@ -5,10 +5,12 @@ public class SpawnerManager : MonoBehaviour
 {
     public static event System.Action<IDamagable[]> OnBossSpawned;
     private BoxCollider2D square;
+    private static BoxCollider2D squareStatic;
     [SerializeField] private WaveProps[] waves;
     private void Start()
     {
         square = GetComponent<BoxCollider2D>();
+        squareStatic = square;
     }
     private IEnumerator SpawnEnemy(GameObject[] enemies, int quantity)
     {
@@ -39,6 +41,13 @@ public class SpawnerManager : MonoBehaviour
             OnBossSpawned?.Invoke(damagables);
         }
         WavesUtils.SetIncoming();
+    }
+    public static void Spawn(GameObject[] enemies, int quantity)
+    {
+        for (int i = 0; i < quantity; i++)
+        {
+            Instantiate(enemies[Random.Range(0, enemies.Length)], PositionInside(squareStatic), Quaternion.identity);
+        }
     }
     public static Vector2 PositionInside(BoxCollider2D square)
     {

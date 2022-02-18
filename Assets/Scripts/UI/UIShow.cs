@@ -112,11 +112,12 @@ public class UIShow : MonoBehaviour
     }
     private void DialogueUtils_OnDialogueAppeared(DialogueContent content)
     {
+#if UNITY_EDITOR
         try
         {
-
+#endif
             dialoguePanel.gameObject.SetActive(true);
-            TextMeshProUGUI text = dialoguePanel.Find("Content/Text").GetComponent<TextMeshProUGUI>();
+            TextMeshProUGUI text = dialoguePanel.Find("Content/TextRect/Text").GetComponent<TextMeshProUGUI>();
             text.text = content.Text;
             Transform buttons = dialoguePanel.Find("Buttons");
             while (buttons.childCount > 0)
@@ -131,11 +132,15 @@ public class UIShow : MonoBehaviour
                 b.onClick.AddListener(content.Choices[i].OnChoice);
                 b.transform.Find("Text").GetComponent<TextMeshProUGUI>().text = content.Choices[i].Text;
             }
+
+#if UNITY_EDITOR
         }
         catch (System.Exception ex)
         {
             Debug.LogError(ex.StackTrace);
         }
+#endif
+
     }
 
     private void Place_OnPlacecd(PurchaseInfo info)

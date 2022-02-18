@@ -90,13 +90,13 @@ namespace LastBastion
         };
             public static DialogueContent GenerateDialogue(string text, params DialogueContent.Choice[] choices)
             {
-                return new DialogueContent(choices,text);
+                return new DialogueContent(choices, text);
             }
             public static DialogueContent.Choice CreateChoice(string text, DialogueContent.Choice.ChoiceAction action, DialogueContent success, DialogueContent fail = null)
             {
                 return new DialogueContent.Choice(text, action, success, fail);
             }
-}
+        }
         public class DialogueContent
         {
             public class Choice
@@ -196,7 +196,7 @@ namespace LastBastion
             }
             public void AddMoneySpent(int value)
             {
-                _moneySpent += value;    
+                _moneySpent += value;
             }
             private void WavesUtils_OnDayChanged(WavesUtils.DayTime obj)
             {
@@ -225,7 +225,7 @@ namespace LastBastion
             private static int _resourceB = 0;
             private static int _resourceC = 0;
             private static int _pendingMoney;
-            private static FinanceProfile _profile = new FinanceProfile(0,0);
+            private static FinanceProfile _profile = new FinanceProfile(0, 0);
             public static int ResourceA => _resourceA;
             public static int ResourceB => _resourceB;
             public static int ResourceC => _resourceC;
@@ -358,7 +358,17 @@ namespace LastBastion
                     CalculateResources();
                 }
             }
-
+            public static void ChangeEvent(int day, GameEvent e)
+            {
+                ref Month cur = ref CurrentMonth;
+                if (cur.days.Last().number <= day)
+                {
+                    cur = ref months[CurrentMonthIndex + 1];
+                    day = cur.days.Length - day;
+                }
+                Debug.Log("Day " + day);
+                cur.days[day].gameEvent = e;
+            }
             public static Animator CameraAnimatorReference => cameraAnimatorReference;
             public static void Update()
             {
@@ -370,6 +380,40 @@ namespace LastBastion
                 if (WavesUtils.WaveNumber % 3 == 0)
                 {
                     HumanResourcesUtils.IncreaseHumanResources();
+                }
+            }
+            public static int CurrentMonthIndex
+            {
+                get
+                {
+                    Month m = months[0];
+                    for (int i = 0; i < months.Length; i++)
+                    {
+                        m = months[i];
+                        Day[] days = m.days;
+                        if (days.Last().number > WavesUtils.WaveNumber)
+                        {
+                            return i;
+                        }
+                    }
+                    return 0;
+                }
+            }
+            public static ref Month CurrentMonth
+            {
+                get
+                {
+                    ref Month m = ref months[0];
+                    for (int i = 0; i < months.Length; i++)
+                    {
+                        m = ref months[i];
+                        Day[] days = m.days;
+                        if (days.Last().number > WavesUtils.WaveNumber)
+                        {
+                            return ref m;
+                        }
+                    }
+                    return ref m;
                 }
             }
             public static bool IsWinter(bool doApply)
@@ -594,6 +638,10 @@ public static class HumanResourcesUtils
         //humanResources = Mathf.RoundToInt(humanResources + (float)humanResources * 1.1f);
         humanResources += UnityEngine.Random.Range(2, 5);
     }
+    public static void IncreaseHumanResources(int amount)
+    {
+        humanResources += amount;
+    }
 }
 
 public class InputInfo
@@ -738,7 +786,7 @@ public static class Vector2Utils
         value.y = Mathf.Clamp(value.y, min.y, max.y);
         return value;
     }
-    public static Vector2Int IntMod (Vector2Int a, Vector2Int b)
+    public static Vector2Int IntMod(Vector2Int a, Vector2Int b)
     {
         Vector2Int result = a;
         a.x %= b.x;

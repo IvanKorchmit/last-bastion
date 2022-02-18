@@ -23,12 +23,15 @@ namespace LastBastion
                     {
                         ref Calendar.Day day = ref months[i].days[j];
                         day.number = num;
-                        day.gameEvent = GetRandomEvent();
+                        if (day.gameEvent == null)
+                        {
+                            day.gameEvent = GetRandomEvent();
+                        }
                         if (day.weather != Calendar.Day.WeatherType.Winter)
                         {
                             day.weather = GetRandomWeatherType();
                         }
-                       
+
                     }
                 }
             }

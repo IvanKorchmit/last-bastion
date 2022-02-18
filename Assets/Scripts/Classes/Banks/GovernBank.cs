@@ -1,10 +1,13 @@
 ﻿using UnityEngine;
 using LastBastion.Dialogue;
+using LastBastion.TimeSystem;
+using LastBastion.Waves;
 namespace LastBastion
 {
 
     namespace Economy
     {
+
         [CreateAssetMenu(fileName ="New Government Bank", menuName = "Economy/Banks/Government")]
         public class GovernBank : BankBase
         {
@@ -74,10 +77,17 @@ namespace LastBastion
                 },
                 success,fail
                 );
-                DialogueContent.Choice denyChoice = DialogueUtils.CreateChoice("No, I will not pay the loan!", () => { UIShow.CloseDialogue(); return true; }, decline);
+                DialogueContent.Choice denyChoice = DialogueUtils.CreateChoice("No, I will not pay the loan!", OnDenial, decline);
                 DialogueContent main = DialogueUtils.GenerateDialogue($"Hello, according to your deadline, you have to give us our money back right now with a percentage of {100 - Mathf.RoundToInt(percentage * 100)}%." +
                     $"Meaning, with your initial debt of {debt}, you have to pay us {debt * percentage}",payment,denyChoice);
                 DialogueUtils.Dialogue(main);
+            }
+
+            protected override bool OnDenial()
+            {
+                CloseRelationShips(this);
+                Calendar.ChangeEvent(WavesUtils.WaveNumber + 7, loanPaymentDenialEvent);
+                return true;
             }
         }
     }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using LastBastion.Economy;
+using TMPro;
 public class UpgradeButton : MonoBehaviour
 {
     [SerializeField] bool invokeUnityEvent;
@@ -17,7 +18,10 @@ public class UpgradeButton : MonoBehaviour
     [SerializeField] private int resACost;
     [SerializeField] private int resBCost;
     [SerializeField] private int resCCost;
-
+    private void Start()
+    {
+        GetComponentInChildren<TextMeshProUGUI>().text += $"\n({upgradeCost}$ A:{resACost} B:{resBCost} C:{resCCost})";
+    }
     public void OnClick()
     {
         if (ShopUtils.CanAfford(upgradeCost, resACost, resBCost, resCCost))

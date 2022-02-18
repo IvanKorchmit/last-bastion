@@ -50,7 +50,7 @@ public class AIBase : MonoBehaviour, IUnsub
 
     private void BloodMoon_OnBloodMoonChange(BloodMoon.BloodMoonStatus obj)
     {
-        if (obj == BloodMoon.BloodMoonStatus.Begin)
+        if (obj == BloodMoon.BloodMoonStatus.Begin || obj == BloodMoon.BloodMoonStatus.Update)
         {
             speed = initSpeed * BLOOD_MOON_MULT;
             stats.IncreaseMeleeDamage(BLOOD_MOON_MULT);

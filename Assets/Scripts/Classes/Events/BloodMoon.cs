@@ -11,12 +11,18 @@ namespace LastBastion
             {
                 public enum BloodMoonStatus
                 {
-                    Begin, End
+                    Begin, End, Update
                 }
                 public static event System.Action<BloodMoonStatus> OnBloodMoonChange;
                 public override void Launch()
                 {
                     OnBloodMoonChange?.Invoke(BloodMoonStatus.Begin);
+                    AIBase.OnEnemySpawn += AIBase_OnEnemySpawn;
+                }
+
+                private void AIBase_OnEnemySpawn()
+                {
+                    OnBloodMoonChange?.Invoke(BloodMoonStatus.Update);
                 }
 
                 public void End()
