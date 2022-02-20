@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using LastBastion.Dialogue;
+using LastBastion.Economy;
 namespace LastBastion
 {
     namespace TimeSystem
@@ -11,7 +12,7 @@ namespace LastBastion
             {
                 public override void Launch()
                 {
-                    DialogueContent.Choice[] Ok = new DialogueContent.Choice[] { new DialogueContent.Choice("Okay",
+                    DialogueContent.ChoiceButton[] Ok = new DialogueContent.ChoiceButton[] { new DialogueContent.ChoiceButton("Okay",
             () => {
                 UIShow.CloseDialogue();
                 return true;
@@ -24,7 +25,7 @@ namespace LastBastion
                     HumanResourcesUtils.IncreaseHumanResources();
                     HumanResourcesUtils.IncreaseHumanResources();
                     HumanResourcesUtils.IncreaseHumanResources();
-
+                    ShopUtils.GainMoney(500);
 
                     DialogueUtils.Dialogue(mainContent);
                 }

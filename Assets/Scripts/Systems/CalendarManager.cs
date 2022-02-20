@@ -8,6 +8,7 @@ namespace LastBastion
         public class CalendarManager : MonoBehaviour
         {
             [SerializeField] GameEvent[] events;
+            [SerializeField] GameEvent[] winterEvents;
             [SerializeField] private Calendar.Month[] months;
             private void Awake()
             {
@@ -25,8 +26,9 @@ namespace LastBastion
                         day.number = num;
                         if (day.gameEvent == null)
                         {
-                            day.gameEvent = GetRandomEvent();
+                            day.gameEvent = day.weather != Calendar.Day.WeatherType.Winter ? GetRandomEvent() : GetRandomWinterEvent();
                         }
+                        
                         if (day.weather != Calendar.Day.WeatherType.Winter)
                         {
                             day.weather = GetRandomWeatherType();
@@ -39,7 +41,10 @@ namespace LastBastion
             {
                 return Random.value >= 0.75f ? events[Random.Range(0, events.Length)] : null;
             }
-
+            private GameEvent GetRandomWinterEvent()
+            {
+                return Random.value >= 0.75f ? winterEvents[Random.Range(0, winterEvents.Length)] : null;
+            }
             private Calendar.Day.WeatherType GetRandomWeatherType()
             {
                 System.Array vals = System.Enum.GetValues(typeof(Calendar.Day.WeatherType));

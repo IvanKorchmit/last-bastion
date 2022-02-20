@@ -18,7 +18,7 @@ public static class GameUtils
     }
     public static void EndGame(GameOverReason reason)
     {
-        DialogueContent.Choice[] Ok = new DialogueContent.Choice[] { new DialogueContent.Choice("End game",
+        DialogueContent.ChoiceButton[] Ok = new DialogueContent.ChoiceButton[] { new DialogueContent.ChoiceButton("End game",
                     () =>
                     {
                         if(!Application.isEditor)
@@ -62,13 +62,14 @@ namespace LastBastion
         public static class DialogueUtils
         {
             private static List<DialogueContent> pendingDialogues;
-
             public delegate void DialogueDelegate(DialogueContent content);
             public static event DialogueDelegate OnDialogueAppeared;
+
             public static void Dialogue(DialogueContent content)
             {
                 pendingDialogues.Add(content);
                 OnDialogueAppeared?.Invoke(content);
+               
             }
             static DialogueUtils()
             {
@@ -79,40 +80,39 @@ namespace LastBastion
             private static void UIShow_OnDialogueClose()
             {
                 pendingDialogues.RemoveAt(0);
-                Dialogue(pendingDialogues[0]);
+                if (pendingDialogues.Count > 0)
+                {
+                    Dialogue(pendingDialogues[0]);
+                }
             }
-
-            public static DialogueContent.Choice[] OK => new DialogueContent.Choice[] { new DialogueContent.Choice("Okay",
-            () => {
-                UIShow.CloseDialogue();
-                return true;
-            }, null, null)
-        };
+            public static DialogueContent.ChoiceButton[] OK => new DialogueContent.ChoiceButton[] { new DialogueContent.ChoiceButton("Okay", () => { UIShow.CloseDialogue(); return true; }, null, null)};
+        
             public static DialogueContent GenerateDialogue(string text, params DialogueContent.Choice[] choices)
             {
                 return new DialogueContent(choices, text);
             }
-            public static DialogueContent.Choice CreateChoice(string text, DialogueContent.Choice.ChoiceAction action, DialogueContent success, DialogueContent fail = null)
+            public static DialogueContent.ChoiceButton CreateChoiceButton(string text, DialogueContent.Choice.ChoiceAction action, DialogueContent success, DialogueContent fail = null)
             {
-                return new DialogueContent.Choice(text, action, success, fail);
+                return new DialogueContent.ChoiceButton(text, action, success, fail);
+            }
+            public static DialogueContent.ChoiceSlider CreateSlider(string format, int min, int max)
+            {
+                return new DialogueContent.ChoiceSlider(format, min, max);
             }
         }
         public class DialogueContent
         {
-            public class Choice
-            {
+            public abstract class Choice
+            { 
                 public delegate bool ChoiceAction();
-                private ChoiceAction action;
-                private string text;
+
+            }
+            public class ChoiceButton : DialogueContent.Choice
+            {
                 private DialogueContent alternativeResponse;
                 private DialogueContent next;
-                public Choice(string text, ChoiceAction action, DialogueContent next, DialogueContent alt)
-                {
-                    this.text = text;
-                    this.action = action;
-                    this.next = next;
-                    alternativeResponse = alt;
-                }
+                private ChoiceAction action;
+                private string text;
                 public string Text => text;
                 public void OnChoice()
                 {
@@ -120,6 +120,7 @@ namespace LastBastion
                     {
                         if (next != null)
                         {
+                            
                             DialogueUtils.Dialogue(next);
                         }
                     }
@@ -128,9 +129,44 @@ namespace LastBastion
                         DialogueUtils.Dialogue(alternativeResponse);
                     }
                 }
+                public ChoiceButton(string text, ChoiceAction action, DialogueContent next, DialogueContent alt)
+                {
+                    this.action = action;
+                    this.next = next;
+                    this.text = text;
+                    alternativeResponse = alt;
+                }
+            }
+            public class ChoiceSlider : DialogueContent.Choice
+            {
+                private string format;
+                private string displayText;
+                private int min;
+                private int max;
+                private int value;
+                public static event System.Action<ChoiceSlider> OnValueChanged;
+                public string Text => displayText;
+                public int Min => min;
+                public int Max => max;
+                public int Value => value;
+                public void OnSlider(float value)
+                {
+                    this.value = (int)value;
+                    displayText = string.Format(format, this.value);
+                    OnValueChanged?.Invoke(this);
+                }
+                public ChoiceSlider(string formattedText, int min, int max)
+                {
+                    this.format = formattedText;
+                    this.min = min;
+                    this.max = max;
+                    value = min;
+                }
             }
             private Choice[] choices;
+            private bool success;
             private string text;
+
             public string Text => text;
             public Choice[] Choices => choices;
             public DialogueContent(Choice[] choices, string text)
@@ -235,10 +271,14 @@ namespace LastBastion
             {
                 WavesUtils.OnDayChanged += WavesUtils_OnDayChanged;
             }
-            public static void AddDebtAndReceiveMoney(BankBase bank)
+            public static void AddDebtAndReceiveMoney(BankBase bank, int amount)
             {
-                _profile.Debts.Add(new FinanceProfile.Debt(bank, 1000, bank.Deadline));
-                _money += 1000;
+                _profile.Debts.Add(new FinanceProfile.Debt(bank, amount, bank.Deadline));
+                _money += amount;
+            }
+            public static void RemoveDebts(BankBase bank)
+            {
+                _profile.Debts.RemoveAll((currentDebt) => currentDebt.Bank == bank);
             }
             private static void WavesUtils_OnDayChanged(WavesUtils.DayTime dayTime)
             {
@@ -635,7 +675,6 @@ public static class HumanResourcesUtils
     }
     public static void IncreaseHumanResources()
     {
-        //humanResources = Mathf.RoundToInt(humanResources + (float)humanResources * 1.1f);
         humanResources += UnityEngine.Random.Range(2, 5);
     }
     public static void IncreaseHumanResources(int amount)

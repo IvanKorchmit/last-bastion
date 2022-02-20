@@ -48,9 +48,9 @@ public class AIBase : MonoBehaviour, IUnsub
         isBlizzard = obj;
     }
 
-    private void BloodMoon_OnBloodMoonChange(BloodMoon.BloodMoonStatus obj)
+    private void BloodMoon_OnBloodMoonChange(BloodMoon.BloodMoonStatus stat)
     {
-        if (obj == BloodMoon.BloodMoonStatus.Begin || obj == BloodMoon.BloodMoonStatus.Update)
+        if (stat == BloodMoon.BloodMoonStatus.Begin || stat == BloodMoon.BloodMoonStatus.Update)
         {
             speed = initSpeed * BLOOD_MOON_MULT;
             stats.IncreaseMeleeDamage(BLOOD_MOON_MULT);

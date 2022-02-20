@@ -14,22 +14,23 @@ public class UIShow : MonoBehaviour
     public UnityEvent onNight;
     public UnityEvent onDay;
     public static event System.Action OnDialogueClose;
-    public TextMeshProUGUI lowerPanelDisplayInfo;
-    public TextMeshProUGUI mainMoneyText;
-    public TextMeshProUGUI humanResourcesCounterText;
-    public RectTransform shopWindow;
-    public RectTransform dialoguePanel;
+    [SerializeField] private TextMeshProUGUI lowerPanelDisplayInfo;
+    [SerializeField] private TextMeshProUGUI mainMoneyText;
+    [SerializeField] private TextMeshProUGUI humanResourcesCounterText;
+    [SerializeField] private RectTransform shopWindow;
+    [SerializeField] private RectTransform dialoguePanel;
     [SerializeField] private RectTransform researchCanvas;
-    public GameObject choiceButtonPrefab;
-    public TextMeshProUGUI dayCounter;
-    public GameObject bossHealthPrefab;
-    public Transform bossHealthTransformPanel;
-    public Image chaosBar;
-    public GameObject weatherInfoPrefab;
-    public Transform weatherContents;
-    public TextMeshProUGUI resA;
-    public TextMeshProUGUI resB;
-    public TextMeshProUGUI resC;
+    [SerializeField] private GameObject sliderChoice;
+    [SerializeField] private GameObject choiceButtonPrefab;
+    [SerializeField] private TextMeshProUGUI dayCounter;
+    [SerializeField] private GameObject bossHealthPrefab;
+    [SerializeField] private Transform bossHealthTransformPanel;
+    [SerializeField] private Image chaosBar;
+    [SerializeField] private GameObject weatherInfoPrefab;
+    [SerializeField] private Transform weatherContents;
+    [SerializeField] private TextMeshProUGUI resA;
+    [SerializeField] private TextMeshProUGUI resB;
+    [SerializeField] private TextMeshProUGUI resC;
     private void Start()
     {
         DialogueUtils.OnDialogueAppeared += DialogueUtils_OnDialogueAppeared;
@@ -108,7 +109,18 @@ public class UIShow : MonoBehaviour
 
     public static void CloseDialogue()
     {
-        OnDialogueClose?.Invoke();
+#if UNITY_EDITOR
+        try
+        {
+#endif
+            OnDialogueClose?.Invoke();
+#if UNITY_EDITOR
+        }
+        catch (System.Exception ex)
+        {
+            Debug.Log(ex.StackTrace);
+        }
+#endif
     }
     private void DialogueUtils_OnDialogueAppeared(DialogueContent content)
     {
@@ -128,9 +140,23 @@ public class UIShow : MonoBehaviour
             }
             for (int i = 0; i < content.Choices.Length; i++)
             {
-                Button b = MonoBehaviour.Instantiate(choiceButtonPrefab, buttons).GetComponent<Button>();
-                b.onClick.AddListener(content.Choices[i].OnChoice);
-                b.transform.Find("Text").GetComponent<TextMeshProUGUI>().text = content.Choices[i].Text;
+                if (content.Choices[i] is DialogueContent.ChoiceButton btn)
+                {
+                    Button b = MonoBehaviour.Instantiate(choiceButtonPrefab, buttons).GetComponent<Button>();
+                    b.onClick.AddListener(btn.OnChoice);
+                    b.transform.Find("Text").GetComponent<TextMeshProUGUI>().text = btn.Text;
+                }
+                else if (content.Choices[i] is DialogueContent.ChoiceSlider sld)
+                {
+                    Slider s = Instantiate(sliderChoice, buttons).GetComponentInChildren<Slider>();
+                    s.onValueChanged.AddListener(sld.OnSlider);
+                    s.value = sld.Value;
+                    s.minValue = sld.Min;
+                    s.maxValue = sld.Max;
+                    s.wholeNumbers = true;
+                    s.GetComponentInParent<ChoiceSlider>().Init(sld);
+                    
+                }
             }
 
 #if UNITY_EDITOR

@@ -17,10 +17,7 @@ namespace LastBastion
                     DialogueContent main = DialogueUtils.GenerateDialogue(mainText, DialogueUtils.OK);
                     DialogueUtils.Dialogue(main);
                 }
-                
             }
-           
-
         }
     }
 }

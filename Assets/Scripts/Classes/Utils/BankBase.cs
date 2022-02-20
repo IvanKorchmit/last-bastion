@@ -7,7 +7,7 @@ namespace LastBastion
         public abstract class BankBase : ScriptableObject
         {
             public delegate void BankDelegate(BankBase bank);
-            public static event BankDelegate OnBankClose;
+            public static event BankDelegate OnBankClosed;
             [SerializeField] protected float percentage;
             [SerializeField] protected int minimalAmount;
             [SerializeField] protected int debtDeadlineCheck;
@@ -20,7 +20,7 @@ namespace LastBastion
             protected abstract bool OnDenial();
             protected void CloseRelationShips(BankBase bank)
             {
-                OnBankClose?.Invoke(bank);
+                OnBankClosed?.Invoke(bank);
             }
         }
        

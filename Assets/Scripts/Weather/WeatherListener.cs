@@ -41,7 +41,15 @@ namespace LastBastion
                 {
                     if (animator != null)
                     {
-                        animator.SetBool("isBloodMoon", info == BloodMoon.BloodMoonStatus.Begin);
+                        switch (info)
+                        {
+                            case BloodMoon.BloodMoonStatus.Begin:
+                                animator.SetBool("isBloodMoon", true);
+                                break;
+                            case BloodMoon.BloodMoonStatus.End:
+                                animator.SetBool("isBloodMoon",false);
+                                break;
+                        }
                     }
                 }
 

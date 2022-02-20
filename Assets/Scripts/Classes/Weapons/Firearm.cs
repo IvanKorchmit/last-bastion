@@ -43,12 +43,11 @@ public class Firearm : WeaponBase
     protected void Shoot(Transform owner, Transform target, float cone)
     {
         Vector2 pos = target.position - owner.transform.position;
-        bool isEnemy = owner.root.CompareTag("Enemy");
         pos.Normalize();
         float angle = Mathf.Atan2(pos.y, pos.x) * Mathf.Rad2Deg;
         Quaternion q = Quaternion.Euler(0, 0, angle + Random.Range(-cone, cone));
         var bullet = Instantiate(this.bullet, owner.transform.position, q);
-        bullet.GetComponent<Projectile>().Initialize(!isEnemy ? damage * damageMult : damage * 0.6f, isEnemy, owner.root.gameObject);
+        bullet.GetComponent<Projectile>().Initialize(damage,owner.root.CompareTag("Enemy"), owner.root.gameObject);
     }
     public override void Use(Transform owner, Transform target)
     {

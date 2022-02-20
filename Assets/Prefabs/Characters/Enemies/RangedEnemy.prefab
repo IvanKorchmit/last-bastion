@@ -360,7 +360,7 @@ MonoBehaviour:
   speed: 1.75
   isAttacking: 0
   shootPoint: {fileID: 7374333989738902973}
-  weapon: {fileID: 11400000, guid: 9a4dbee60d415344d92b033b03cfd5d5, type: 2}
+  weapon: {fileID: 11400000, guid: cef6994aeb8d46147b08f6bb90f70688, type: 2}
 --- !u!114 &7107044077065112932
 MonoBehaviour:
   m_ObjectHideFlags: 0

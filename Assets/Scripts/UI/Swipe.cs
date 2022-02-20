@@ -41,7 +41,7 @@ public class Swipe : MonoBehaviour
 #if !UNITY_ANDROID
         if (Input.GetMouseButtonDown(0) && (!isInCanvas ? !EventSystem.current.IsPointerOverGameObject() : true))
 #else 
-        if(Input.touchCount == 1 && Input.GetTouch(0).phase == TouchPhase.Began)
+        if(Input.touchCount == 1 && Input.GetTouch(0).phase == TouchPhase.Began && (!isInCanvas ? !EventSystem.current.IsPointerOverGameObject() : true))
 #endif
         {
 #if !UNITY_ANDROID
@@ -54,7 +54,7 @@ public class Swipe : MonoBehaviour
         if (Input.GetMouseButton(0) && (!isInCanvas ? !EventSystem.current.IsPointerOverGameObject() : true))
         {
 #else
-        if (Input.touchCount == 1)
+        if (Input.touchCount == 1 && (!isInCanvas ? !EventSystem.current.IsPointerOverGameObject() : true))
         {
 #endif
             Vector2 delta = !isInCanvas ? -MouseDelta : MouseDelta;
@@ -63,7 +63,7 @@ public class Swipe : MonoBehaviour
 #if !UNITY_ANDROID
         else if (Input.GetMouseButtonUp(0) && (!isInCanvas ? !EventSystem.current.IsPointerOverGameObject() : true))
 #else
-        if (Input.touchCount == 1 && Input.GetTouch(0).phase == TouchPhase.Ended)
+        if (Input.touchCount == 1 && Input.GetTouch(0).phase == TouchPhase.Ended && (!isInCanvas ? !EventSystem.current.IsPointerOverGameObject() : true))
 #endif
         {
             previousPos = !isInCanvas ? -MouseDelta : MouseDelta;

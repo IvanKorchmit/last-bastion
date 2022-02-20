@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 22d20752d50ad994386270c3e3421a1d, type: 3}
   m_Name: Collector Ambush
   m_EditorClassIdentifier: 
-  name: 
-  enemies: []
-  enemyQuantity: 0
+  name: "\u0422\u0435\u0431\u0435 \u0445\u0430\u043D\u0430!"
+  enemies:
+  - {fileID: 7107044077065112931, guid: ebc821e6ae3215e46b1731d7d7ee9e50, type: 3}
+  - {fileID: 7107044077065112931, guid: 139859df8a6f18d43afe35812b23b781, type: 3}
+  enemyQuantity: 30

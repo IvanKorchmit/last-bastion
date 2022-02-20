@@ -28,6 +28,7 @@ namespace LastBastion
                 public void End()
                 {
                     OnBloodMoonChange?.Invoke(BloodMoonStatus.End);
+                    AIBase.OnEnemySpawn -= AIBase_OnEnemySpawn;
                 }
             }
         }

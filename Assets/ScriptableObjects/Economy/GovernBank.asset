@@ -13,5 +13,6 @@ MonoBehaviour:
   m_Name: GovernBank
   m_EditorClassIdentifier: 
   percentage: 1.1
-  minimalAmount: 1000
-  debtDeadlineCheck: 1
+  minimalAmount: 500
+  debtDeadlineCheck: 12
+  loanPaymentDenialEvent: {fileID: 11400000, guid: 73cb055513b825540ab1f53c00a4a498, type: 2}

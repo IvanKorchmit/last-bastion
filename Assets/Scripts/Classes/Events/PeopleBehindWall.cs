@@ -19,10 +19,14 @@ namespace LastBastion
                 [SerializeField] private string deny;
                 public override void Launch()
                 {
+
+
+
+
                     DialogueContent success = DialogueUtils.GenerateDialogue(acceptRescueText, DialogueUtils.OK);
-                    DialogueContent fail = DialogueUtils.GenerateDialogue(denyRescueText, DialogueUtils.CreateChoice("Okay", Deny, null));
-                    DialogueContent.Choice rescue = DialogueUtils.CreateChoice(accept, Rescue,success,fail);
-                    DialogueContent.Choice deny = DialogueUtils.CreateChoice(this.deny, Deny, fail);
+                    DialogueContent fail = DialogueUtils.GenerateDialogue(denyRescueText, DialogueUtils.CreateChoiceButton("Okay", Deny, null));
+                    DialogueContent.Choice rescue = DialogueUtils.CreateChoiceButton(accept, Rescue,success,fail);
+                    DialogueContent.Choice deny = DialogueUtils.CreateChoiceButton(this.deny, Deny, fail);
                     DialogueContent main = DialogueUtils.GenerateDialogue(mainText, rescue,deny);
                     DialogueUtils.Dialogue(main);
                 }

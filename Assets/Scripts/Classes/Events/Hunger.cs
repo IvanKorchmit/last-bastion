@@ -15,8 +15,8 @@ namespace LastBastion
                     DialogueContent success = DialogueUtils.GenerateDialogue("Thank you! Now we can fight for you!", DialogueUtils.OK);
                     DialogueContent fail = DialogueUtils.GenerateDialogue("Looks like you do not have enough money for that... Please, we are dying of starvation!", DialogueUtils.OK);
                     DialogueContent deny = DialogueUtils.GenerateDialogue("I am really sorry to hear that... Please, we are dying of starvation!", DialogueUtils.OK);
-                    DialogueContent.Choice yes = DialogueUtils.CreateChoice("Sure, I will spend 100$ for that!", SpendMoney, success, fail);
-                    DialogueContent.Choice no = DialogueUtils.CreateChoice("No, I will decline this request!", Deny, deny);
+                    DialogueContent.Choice yes = DialogueUtils.CreateChoiceButton("Sure, I will spend 100$ for that!", SpendMoney, success ,fail);
+                    DialogueContent.Choice no = DialogueUtils.CreateChoiceButton("No, I will decline this request!", Deny,deny);
                     DialogueContent main = DialogueUtils.GenerateDialogue("Hello, we are hungry and we acquire some ration in order to survive!",yes,no);
 
                     DialogueUtils.Dialogue(main);
